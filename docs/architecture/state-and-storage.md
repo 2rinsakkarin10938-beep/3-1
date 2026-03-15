@@ -22,7 +22,8 @@
 {
   name: "Ari",
   className: "warrior",
-  hairColor: "#7a4a28"
+  hairColor: "#7a4a28",
+  hairStyle: "bob"
 }
 ```
 

@@ -29,6 +29,7 @@
 รองรับ:
 - เลือก class: Warrior, Mage, Rogue
 - ตั้งชื่อตัวละคร
+- เลือกทรงผม
 - เลือกสีผมจาก preset
 - ดู preview ตัวละครเดินบน stage แบบสด
 - save ลง `localStorage`

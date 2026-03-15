@@ -1,10 +1,22 @@
 import { CHARACTER_DATA } from "../characters/character-data.js";
 
-const PREVIEW_SPRITE = encodeURI("/assets/Eris Esra's Character Template 4.0/16x32/16x32 Walk-Sheet.png");
-const FRAME_WIDTH = 16;
-const FRAME_HEIGHT = 32;
-const FRAME_COUNT = 4;
-const DIRECTION_ROW = 1;
+const PREVIEW_BODY_SPRITE = encodeURI("/assets/FREE Mana Seed Character Base Demo 2.0/char_a_p1/char_a_p1_0bas_humn_v00.png");
+const FRAME_SIZE = 64;
+const WALK_FRAMES = [0, 1, 2, 3, 4, 5];
+const WALK_ROW_LEFT = 6;
+const WALK_ROW_RIGHT = 7;
+const HAIR_STYLES = [
+  {
+    key: "bob",
+    label: "Bob",
+    sprite: encodeURI("/assets/FREE Mana Seed Character Base Demo 2.0/char_a_p1/4har/char_a_p1_4har_bob1_v00.png"),
+  },
+  {
+    key: "dapper",
+    label: "Dapper",
+    sprite: encodeURI("/assets/FREE Mana Seed Character Base Demo 2.0/char_a_p1/4har/char_a_p1_4har_dap1_v00.png"),
+  },
+];
 const HAIR_PALETTES = [
   { key: "ember", label: "Ember", color: "#7a4a28", shine: "#c98b56", shadow: "#412012" },
   { key: "sun", label: "Sun", color: "#d7a93f", shine: "#f7de8b", shadow: "#7f5619" },
@@ -23,9 +35,7 @@ function classCard(app, key, isSelected) {
       class="pixel-card class-card class-card-compact text-left ${isSelected ? "is-selected" : ""}"
     >
       <div class="flex items-start justify-between gap-2">
-        <div>
-          <p class="text-base font-semibold text-slate-100">${app.classLabel(key)}</p>
-        </div>
+        <p class="text-base font-semibold text-slate-100">${app.classLabel(key)}</p>
         <div class="sprite-preview sprite-preview-compact" style="background-color:${data.color}33"></div>
       </div>
       <div class="mt-2 grid grid-cols-2 gap-2 text-[11px] text-slate-300">
@@ -53,9 +63,23 @@ function hairSwatch(swatch, selectedKey) {
   `;
 }
 
+function hairStyleCard(app, style, selectedKey) {
+  return `
+    <button
+      type="button"
+      data-hair-style="${style.key}"
+      class="pixel-card hair-style-card ${style.key === selectedKey ? "is-selected" : ""}"
+    >
+      <p class="text-sm font-semibold text-slate-100">${app.t(`character.hairStyle.${style.key}`)}</p>
+      <p class="mt-2 text-[11px] uppercase tracking-[0.2em] text-slate-400">${app.t("character.hairStyle")}</p>
+    </button>
+  `;
+}
+
 function buildPreviewMarkup(app, state) {
   const definition = CHARACTER_DATA[state.selectedClass];
   const swatch = HAIR_PALETTES.find((entry) => entry.key === state.selectedHairKey) ?? HAIR_PALETTES[0];
+  const hairStyle = HAIR_STYLES.find((entry) => entry.key === state.selectedHairStyle) ?? HAIR_STYLES[0];
 
   return `
     <div class="character-preview-shell h-full min-h-0 p-4 md:p-6">
@@ -80,6 +104,7 @@ function buildPreviewMarkup(app, state) {
             <p class="text-xs uppercase tracking-[0.2em] text-slate-400">${app.t("character.classFocus")}</p>
             <p class="mt-3 text-xl font-semibold text-slate-50">${state.name || app.classLabel(state.selectedClass)}</p>
             <p class="mt-2 text-sm text-slate-300">${app.t(definition.specialNameKey ?? definition.specialName)}</p>
+            <p class="mt-3 text-xs uppercase tracking-[0.2em] text-slate-500">${app.t("character.hairStyle")}: ${app.t(`character.hairStyle.${hairStyle.key}`)}</p>
           </div>
           <div class="pixel-card">
             <p class="text-xs uppercase tracking-[0.2em] text-slate-400">${app.t("character.hairColor")}</p>
@@ -103,30 +128,47 @@ function createPreviewController(app, state) {
   let context;
   let rafId = 0;
   let lastTimestamp = 0;
-  let sprite = null;
+  const imageCache = new Map();
+  const tintCanvas = document.createElement("canvas");
+  tintCanvas.width = FRAME_SIZE;
+  tintCanvas.height = FRAME_SIZE;
+  const tintContext = tintCanvas.getContext("2d", { willReadFrequently: true });
   const runtime = {
     frameIndex: 0,
     frameTimer: 0,
-    actorX: 140,
+    actorX: 120,
     actorDirection: 1,
-    actorY: 344,
+    actorY: 286,
   };
+
+  function loadImage(src) {
+    if (!imageCache.has(src)) {
+      const image = new Image();
+      image.src = src;
+      imageCache.set(src, image);
+    }
+    return imageCache.get(src);
+  }
 
   function getHairPalette() {
     return HAIR_PALETTES.find((entry) => entry.key === state.selectedHairKey) ?? HAIR_PALETTES[0];
   }
 
+  function getHairStyle() {
+    return HAIR_STYLES.find((entry) => entry.key === state.selectedHairStyle) ?? HAIR_STYLES[0];
+  }
+
   function step(deltaMs) {
     runtime.frameTimer += deltaMs;
-    if (runtime.frameTimer >= 140) {
+    if (runtime.frameTimer >= 120) {
       runtime.frameTimer = 0;
-      runtime.frameIndex = (runtime.frameIndex + 1) % FRAME_COUNT;
+      runtime.frameIndex = (runtime.frameIndex + 1) % WALK_FRAMES.length;
     }
 
-    runtime.actorX += runtime.actorDirection * deltaMs * 0.12;
-    if (runtime.actorX >= 720) {
+    runtime.actorX += runtime.actorDirection * deltaMs * 0.1;
+    if (runtime.actorX >= 640) {
       runtime.actorDirection = -1;
-    } else if (runtime.actorX <= 140) {
+    } else if (runtime.actorX <= 120) {
       runtime.actorDirection = 1;
     }
   }
@@ -141,9 +183,9 @@ function createPreviewController(app, state) {
     context.fillStyle = gradient;
     context.fillRect(0, 0, canvas.width, canvas.height);
 
-    context.fillStyle = `${definition.color}22`;
+    context.fillStyle = `${definition.color}20`;
     context.beginPath();
-    context.arc(canvas.width * 0.3, canvas.height * 0.28, 130, 0, Math.PI * 2);
+    context.arc(canvas.width * 0.3, canvas.height * 0.3, 130, 0, Math.PI * 2);
     context.fill();
 
     context.fillStyle = "rgba(255,255,255,0.03)";
@@ -166,79 +208,67 @@ function createPreviewController(app, state) {
     context.fillRect(0, 418, canvas.width, 4);
   }
 
-  function drawHairOverlay(x, y, direction, hairPalette) {
-    const scale = 10;
-    const originX = x + (direction === 1 ? 34 : 30);
-    const originY = y + 54;
-    const shapes = direction === 1
-      ? [
-          [0, 0, 4, 1, hairPalette.shine],
-          [-1, 1, 6, 2, hairPalette.color],
-          [-2, 3, 7, 2, hairPalette.color],
-          [1, 5, 4, 2, hairPalette.shadow],
-          [3, 7, 2, 1, hairPalette.shadow],
-        ]
-      : [
-          [0, 0, 4, 1, hairPalette.shine],
-          [-1, 1, 6, 2, hairPalette.color],
-          [-1, 3, 7, 2, hairPalette.color],
-          [0, 5, 4, 2, hairPalette.shadow],
-          [-1, 7, 2, 1, hairPalette.shadow],
-        ];
+  function tintHairFrame(image, sourceX, sourceY) {
+    if (!tintContext || !image?.complete) {
+      return null;
+    }
 
-    shapes.forEach(([dx, dy, width, height, color]) => {
-      context.fillStyle = color;
-      context.fillRect(originX + dx * scale, originY + dy * scale, width * scale, height * scale);
-    });
+    const palette = getHairPalette();
+    tintContext.clearRect(0, 0, FRAME_SIZE, FRAME_SIZE);
+    tintContext.drawImage(image, sourceX, sourceY, FRAME_SIZE, FRAME_SIZE, 0, 0, FRAME_SIZE, FRAME_SIZE);
+
+    const imageData = tintContext.getImageData(0, 0, FRAME_SIZE, FRAME_SIZE);
+    const { data } = imageData;
+    for (let index = 0; index < data.length; index += 4) {
+      const alpha = data[index + 3];
+      if (alpha === 0) {
+        continue;
+      }
+
+      const luminance = (data[index] + data[index + 1] + data[index + 2]) / 3;
+      const tone = luminance > 185 ? palette.shine : luminance > 110 ? palette.color : palette.shadow;
+      const red = Number.parseInt(tone.slice(1, 3), 16);
+      const green = Number.parseInt(tone.slice(3, 5), 16);
+      const blue = Number.parseInt(tone.slice(5, 7), 16);
+      data[index] = red;
+      data[index + 1] = green;
+      data[index + 2] = blue;
+    }
+
+    tintContext.putImageData(imageData, 0, 0);
+    return tintCanvas;
   }
 
-  function drawSprite(definition) {
-    const direction = runtime.actorDirection === 1 ? 1 : -1;
+  function drawCharacter() {
+    const bodyImage = loadImage(PREVIEW_BODY_SPRITE);
+    const hairImage = loadImage(getHairStyle().sprite);
+    const frameColumn = WALK_FRAMES[runtime.frameIndex];
+    const frameRow = runtime.actorDirection === 1 ? WALK_ROW_LEFT : WALK_ROW_RIGHT;
+    const sourceX = frameColumn * FRAME_SIZE;
+    const sourceY = frameRow * FRAME_SIZE;
+    const scale = 4.8;
+    const drawWidth = FRAME_SIZE * scale;
+    const drawHeight = FRAME_SIZE * scale;
     const drawX = runtime.actorX;
     const drawY = runtime.actorY;
-    const scale = 10;
-    const sourceX = runtime.frameIndex * FRAME_WIDTH;
-    const sourceY = DIRECTION_ROW * FRAME_HEIGHT;
 
-    context.save();
-    if (direction === -1) {
-      context.translate(drawX + FRAME_WIDTH * scale, 0);
-      context.scale(-1, 1);
-    } else {
-      context.translate(drawX, 0);
-    }
+    context.fillStyle = "rgba(0, 0, 0, 0.3)";
+    context.fillRect(drawX + 52, drawY + drawHeight - 18, drawWidth - 104, 16);
 
-    if (sprite?.complete) {
+    if (bodyImage?.complete) {
       context.imageSmoothingEnabled = false;
-      context.drawImage(
-        sprite,
-        sourceX,
-        sourceY,
-        FRAME_WIDTH,
-        FRAME_HEIGHT,
-        0,
-        drawY,
-        FRAME_WIDTH * scale,
-        FRAME_HEIGHT * scale,
-      );
-    } else {
-      context.fillStyle = "#efe7da";
-      context.fillRect(0, drawY + 48, FRAME_WIDTH * scale, FRAME_HEIGHT * scale - 48);
-      context.fillRect(24, drawY + 18, 112, 84);
+      context.drawImage(bodyImage, sourceX, sourceY, FRAME_SIZE, FRAME_SIZE, drawX, drawY, drawWidth, drawHeight);
     }
 
-    context.fillStyle = `${definition.color}33`;
-    context.fillRect(18, drawY + 86, 124, 136);
-    drawHairOverlay(0, drawY, direction, getHairPalette());
-    context.restore();
-
-    context.fillStyle = "rgba(0, 0, 0, 0.32)";
-    context.fillRect(drawX + 12, drawY + 298, 136, 18);
+    const tintedHair = tintHairFrame(hairImage, sourceX, sourceY);
+    if (tintedHair) {
+      context.drawImage(tintedHair, 0, 0, FRAME_SIZE, FRAME_SIZE, drawX, drawY, drawWidth, drawHeight);
+    }
   }
 
   function drawForeground(definition) {
     context.fillStyle = "rgba(255,255,255,0.08)";
-    context.fillRect(62, 110, 190, 34);
+    context.fillRect(62, 110, 250, 34);
     context.fillStyle = "#f8fafc";
     context.font = "700 22px 'Google Sans'";
     context.fillText(state.name || app.classLabel(state.selectedClass), 80, 134);
@@ -255,7 +285,7 @@ function createPreviewController(app, state) {
 
     const definition = CHARACTER_DATA[state.selectedClass];
     drawBackdrop(definition);
-    drawSprite(definition);
+    drawCharacter();
     drawForeground(definition);
   }
 
@@ -274,13 +304,11 @@ function createPreviewController(app, state) {
   return {
     mount(nextRoot) {
       root = nextRoot;
+      loadImage(PREVIEW_BODY_SPRITE);
+      HAIR_STYLES.forEach((style) => loadImage(style.sprite));
       root.innerHTML = buildPreviewMarkup(app, state);
       canvas = root.querySelector(".character-stage-canvas");
       context = canvas?.getContext("2d");
-      if (sprite === null) {
-        sprite = new Image();
-        sprite.src = PREVIEW_SPRITE;
-      }
       this.render();
       window.cancelAnimationFrame(rafId);
       rafId = window.requestAnimationFrame(tick);
@@ -294,6 +322,7 @@ function createPreviewController(app, state) {
           name: state.name || app.classLabel(state.selectedClass),
           className: state.selectedClass,
           hairColor: getHairPalette().color,
+          hairStyle: getHairStyle().key,
           actor: {
             x: Math.round(runtime.actorX),
             y: runtime.actorY,
@@ -331,9 +360,12 @@ function createPreviewController(app, state) {
 
 export function createCharacterCreateScreen(app) {
   let section;
+  let handleClick;
+  let handleInput;
   const state = {
     selectedClass: app.character?.className ?? "warrior",
     selectedHairKey: HAIR_PALETTES.find((entry) => entry.color === app.character?.hairColor)?.key ?? HAIR_PALETTES[0].key,
+    selectedHairStyle: app.character?.hairStyle ?? HAIR_STYLES[0].key,
     name: app.character?.name ?? "",
   };
   const previewController = createPreviewController(app, state);
@@ -346,6 +378,58 @@ export function createCharacterCreateScreen(app) {
     init(root) {
       section = document.createElement("section");
       section.className = "screen";
+      handleClick = (event) => {
+        const target = event.target.closest("[data-class], [data-hair], [data-hair-style], [data-action]");
+        if (!target) {
+          return;
+        }
+
+        if (target.dataset.class) {
+          state.selectedClass = target.dataset.class;
+          this.render();
+          syncPreview();
+          return;
+        }
+
+        if (target.dataset.hair) {
+          state.selectedHairKey = target.dataset.hair;
+          this.render();
+          syncPreview();
+          return;
+        }
+
+        if (target.dataset.hairStyle) {
+          state.selectedHairStyle = target.dataset.hairStyle;
+          this.render();
+          syncPreview();
+          return;
+        }
+
+        if (target.dataset.action === "back") {
+          app.showScreen("lobby");
+          return;
+        }
+
+        if (target.dataset.action === "save") {
+          const name = state.name.trim() || app.classLabel(state.selectedClass);
+          const selectedHair = HAIR_PALETTES.find((entry) => entry.key === state.selectedHairKey) ?? HAIR_PALETTES[0];
+          app.setCharacter({
+            name,
+            className: state.selectedClass,
+            hairColor: selectedHair.color,
+            hairStyle: state.selectedHairStyle,
+          });
+        }
+      };
+      handleInput = (event) => {
+        if (event.target.id !== "character-name") {
+          return;
+        }
+        state.name = event.target.value;
+        syncPreview();
+      };
+      section.addEventListener("click", handleClick);
+      section.addEventListener("input", handleInput);
       root.appendChild(section);
       this.render();
       if (app.previewPanel) {
@@ -380,7 +464,10 @@ export function createCharacterCreateScreen(app) {
 
           <div class="pixel-card compact-form-card">
             <p class="text-xs uppercase tracking-[0.2em] text-slate-400">${app.t("character.appearance")}</p>
-            <div class="mt-2 flex items-center justify-between gap-3">
+            <div class="mt-2 grid grid-cols-2 gap-2">
+              ${HAIR_STYLES.map((style) => hairStyleCard(app, style, state.selectedHairStyle)).join("")}
+            </div>
+            <div class="mt-3 flex items-center justify-between gap-3">
               <div>
                 <p class="text-sm font-semibold text-slate-100">${app.t("character.hairColor")}</p>
                 <p class="mt-1 text-[11px] text-slate-400">6 palette presets</p>
@@ -395,38 +482,6 @@ export function createCharacterCreateScreen(app) {
 
         <button data-action="save" class="pixel-button success w-full">${app.t("character.confirm")}</button>
       `;
-
-      section.querySelectorAll("[data-class]").forEach((button) => {
-        button.addEventListener("click", () => {
-          state.selectedClass = button.dataset.class;
-          this.render();
-          syncPreview();
-        });
-      });
-
-      section.querySelector("#character-name")?.addEventListener("input", (event) => {
-        state.name = event.target.value;
-        syncPreview();
-      });
-
-      section.querySelectorAll("[data-hair]").forEach((button) => {
-        button.addEventListener("click", () => {
-          state.selectedHairKey = button.dataset.hair;
-          this.render();
-          syncPreview();
-        });
-      });
-
-      section.querySelector('[data-action="back"]')?.addEventListener("click", () => app.showScreen("lobby"));
-      section.querySelector('[data-action="save"]')?.addEventListener("click", () => {
-        const name = state.name.trim() || app.classLabel(state.selectedClass);
-        const selectedHair = HAIR_PALETTES.find((entry) => entry.key === state.selectedHairKey) ?? HAIR_PALETTES[0];
-        app.setCharacter({
-          name,
-          className: state.selectedClass,
-          hairColor: selectedHair.color,
-        });
-      });
     },
 
     show() {

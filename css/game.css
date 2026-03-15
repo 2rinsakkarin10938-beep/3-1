@@ -218,6 +218,23 @@ input:focus {
   padding: 0.75rem;
 }
 
+.hair-style-card {
+  padding: 0.7rem;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease,
+    background 120ms ease;
+}
+
+.hair-style-card:hover,
+.hair-style-card.is-selected {
+  transform: translate(-2px, -2px);
+  border-color: var(--pixel-accent);
+  background: linear-gradient(180deg, rgba(42, 246, 255, 0.14), rgba(35, 44, 64, 1));
+}
+
 .character-preview-shell {
   display: flex;
 }
@@ -252,6 +269,7 @@ input:focus {
   align-items: center;
   justify-content: center;
   min-height: 48px;
+  cursor: pointer;
   border: 3px solid var(--pixel-border);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 28%),

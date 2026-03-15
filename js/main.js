@@ -126,6 +126,7 @@ function cloneCharacter(character, overrides = {}) {
     name: character.name,
     className: character.className,
     hairColor: character.hairColor ?? "#7a4a28",
+    hairStyle: character.hairStyle ?? "bob",
     ready: false,
     owner: "local",
     ...overrides,

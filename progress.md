@@ -8,3 +8,5 @@ Original prompt: ตอนนี้เราจะออกแบบ character �
 - 2026-03-15: Verified with the Playwright skill client that class switching and hair-color switching both update the preview canvas and `render_game_to_text`.
 - 2026-03-15: The bundled Playwright harness hangs after artifact capture in this environment, so test runs were wrapped with a timeout and validated via generated screenshots/state files.
 - TODO: If we want the hair swatch grid visible without any scrolling at 1280x720, compress the left panel a little more or move the swatches higher in the form.
+- 2026-03-15: Swapped the preview pipeline from a hand-drawn hair block to Mana Seed paper-doll sheets so hair now follows the real animation frames.
+- 2026-03-15: Added hairstyle selection (`bob`, `dapper`) and persisted `hairStyle` alongside `hairColor`.
