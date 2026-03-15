@@ -65,6 +65,13 @@
 
 - `maps/arena.json`: current arena map definition
 
+## Deploy
+
+- `docker-compose.yml`: production stack definition
+- `deploy/Caddyfile`: domain routing, static serving, reverse proxy
+- `deploy/web.Dockerfile`: static web image
+- `deploy/server.Dockerfile`: Bun/Elysia server image
+
 ## ถ้าจะเปลี่ยนเรื่องไหน ดูที่ไหน
 
 - เปลี่ยน flow ของหน้าจอ: `js/main.js`, `js/ui/*`

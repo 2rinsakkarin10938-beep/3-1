@@ -1,0 +1,13 @@
+{$APP_DOMAIN} {
+  encode zstd gzip
+
+  @api path /api/* /health
+  reverse_proxy @api server:3000
+
+  @ws path /ws/*
+  reverse_proxy @ws server:3000
+
+  root * /usr/share/caddy
+  try_files {path} /index.html
+  file_server
+}

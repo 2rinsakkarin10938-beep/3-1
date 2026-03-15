@@ -251,6 +251,6 @@ const app = new Elysia()
       }
     },
   })
-  .listen(port);
+  .listen({ port, hostname: "0.0.0.0" });
 
-console.log(`Elysia server running at http://localhost:${app.server?.port ?? port}`);
+console.log(`Elysia server running at http://0.0.0.0:${app.server?.port ?? port}`);

@@ -29,6 +29,16 @@ bun install
 bun run dev
 ```
 
+## Deploy
+
+deploy production ใช้ `docker-compose.yml` ที่ root repo
+
+services:
+- `web`: Caddy สำหรับ `gamev1.apichart.dev`, serve static frontend และ reverse proxy `/api` กับ `/ws`
+- `server`: ElysiaJS/Bun backend
+
+workflow ที่ [deploy.yml](/home/apichart/3-1/.github/workflows/deploy.yml) ต้องอาศัย DNS ของ domain ชี้มาที่ VPS และเครื่องต้องเปิด `80/443`
+
 ## Controls
 
 - Player 1: `WASD`, `Shift`, `1 2 3 4`

@@ -35,6 +35,19 @@ bun run dev
 - health check: `GET /health`
 - room websocket: `ws://localhost:3000/ws/rooms/:roomId`
 
+## Production Deploy Shape
+
+ตอนนี้ repo มี runtime deploy ครบขั้นต่ำ:
+- `docker-compose.yml`
+- `deploy/Caddyfile`
+- `deploy/web.Dockerfile`
+- `deploy/server.Dockerfile`
+
+แนวทาง:
+- Caddy รับ traffic ของ `gamev1.apichart.dev`
+- static frontend ถูก serve จาก container `web`
+- `/api/*` และ `/ws/*` ถูก proxy ไปที่ Elysia server
+
 ## Flow ที่ควรทดสอบ
 
 1. เปิดแอปแล้วต้องเห็น Lobby

@@ -23,6 +23,7 @@ docs/
 - [features/combat-and-skills.md](/home/apichart/3-1/docs/features/combat-and-skills.md)
 - [features/rooms-and-local-multiplayer.md](/home/apichart/3-1/docs/features/rooms-and-local-multiplayer.md)
 - [development/getting-started.md](/home/apichart/3-1/docs/development/getting-started.md)
+- [development/deployment.md](/home/apichart/3-1/docs/development/deployment.md)
 - [development/testing.md](/home/apichart/3-1/docs/development/testing.md)
 - [development/contributing.md](/home/apichart/3-1/docs/development/contributing.md)
 - [development/roadmap.md](/home/apichart/3-1/docs/development/roadmap.md)
