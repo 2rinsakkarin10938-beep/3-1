@@ -7,7 +7,7 @@ services:
     depends_on:
       - server
     ports:
-      - "127.0.0.1:${WEB_HTTP_PORT:-8080}:80"
+      - "${WEB_HTTP_PORT:-8080}:80"
     volumes:
       - caddy_data:/data
       - caddy_config:/config
