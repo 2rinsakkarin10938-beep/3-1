@@ -125,6 +125,7 @@ function cloneCharacter(character, overrides = {}) {
     id: uid("player"),
     name: character.name,
     className: character.className,
+    hairColor: character.hairColor ?? "#7a4a28",
     ready: false,
     owner: "local",
     ...overrides,

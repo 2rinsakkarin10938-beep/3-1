@@ -21,7 +21,8 @@
 ```js
 {
   name: "Ari",
-  className: "warrior"
+  className: "warrior",
+  hairColor: "#7a4a28"
 }
 ```
 
