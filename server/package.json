@@ -1,0 +1,12 @@
+{
+  "name": "pixel-arena-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bun --watch server.js",
+    "start": "bun run server.js"
+  },
+  "dependencies": {
+    "elysia": "^1"
+  }
+}
