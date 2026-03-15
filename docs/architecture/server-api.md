@@ -1,6 +1,6 @@
 # Server API
 
-ฝั่ง server ใช้ ElysiaJS บน Bun และตอนนี้ทำหน้าที่เป็น prototype room service แบบ in-memory
+ฝั่ง server ใช้ ElysiaJS บน Bun และตอนนี้ทำหน้าที่เป็น prototype room service + world chat service แบบ in-memory
 
 ไฟล์หลัก:
 - `server/server.js`
@@ -37,7 +37,25 @@
 
 ### `GET /health`
 
-ใช้ health check และดูจำนวนห้องที่อยู่ใน memory
+ใช้ health check และดูจำนวนห้องกับจำนวนข้อความแชทที่อยู่ใน memory
+
+### `GET /api/chat/world`
+
+ดึง history ของ world chat ล่าสุด
+
+### `POST /api/chat/world`
+
+ส่งข้อความเข้า world chat
+
+body:
+
+```json
+{
+  "author": "Ari",
+  "text": "Hello world",
+  "className": "warrior"
+}
+```
 
 ### `GET /api/rooms`
 
@@ -90,6 +108,15 @@ body:
 ```
 
 ## WebSocket Route
+
+### `ws /ws/chat/world`
+
+ใช้สำหรับ world chat แบบ real-time
+
+พฤติกรรมปัจจุบัน:
+- ตอน connect จะส่ง `world:snapshot`
+- เมื่อมีข้อความใหม่ จะ broadcast `world:message`
+- รองรับ `ping` -> `pong`
 
 ### `ws /ws/rooms/:roomId`
 

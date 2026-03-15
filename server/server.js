@@ -2,9 +2,18 @@ import { Elysia, t } from "elysia";
 
 const port = Number(process.env.PORT || 3000);
 const corsOrigin = process.env.CORS_ORIGIN || "*";
+const MAX_WORLD_MESSAGES = 100;
 
 const rooms = new Map();
 const roomSockets = new Map();
+const worldMessages = [];
+const worldChatSockets = new Set();
+
+function applyCors(set) {
+  set.headers["Access-Control-Allow-Origin"] = corsOrigin;
+  set.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS";
+  set.headers["Access-Control-Allow-Headers"] = "Content-Type";
+}
 
 function now() {
   return new Date().toISOString();
@@ -12,6 +21,10 @@ function now() {
 
 function createRoomId() {
   return `room-${crypto.randomUUID().slice(0, 8)}`;
+}
+
+function createMessageId() {
+  return `msg-${crypto.randomUUID().slice(0, 8)}`;
 }
 
 function summarizeRoom(room) {
@@ -35,6 +48,16 @@ function summarizeRoom(room) {
   };
 }
 
+function summarizeWorldMessage(message) {
+  return {
+    id: message.id,
+    author: message.author,
+    text: message.text,
+    className: message.className ?? null,
+    createdAt: message.createdAt,
+  };
+}
+
 function getSocketGroup(roomId) {
   if (!roomSockets.has(roomId)) {
     roomSockets.set(roomId, new Set());
@@ -53,6 +76,15 @@ function broadcast(roomId, type, payload) {
   sockets.forEach((socket) => socket.send(message));
 }
 
+function broadcastWorld(type, payload) {
+  if (!worldChatSockets.size) {
+    return;
+  }
+
+  const message = JSON.stringify({ type, payload });
+  worldChatSockets.forEach((socket) => socket.send(message));
+}
+
 function upsertRoom(room) {
   room.updatedAt = now();
   rooms.set(room.id, room);
@@ -62,6 +94,26 @@ function upsertRoom(room) {
 
 function findRoom(roomId) {
   return rooms.get(roomId) ?? null;
+}
+
+function createWorldMessage(body) {
+  return {
+    id: createMessageId(),
+    author: body.author.trim(),
+    text: body.text.trim(),
+    className: body.className ?? null,
+    createdAt: now(),
+  };
+}
+
+function storeWorldMessage(message) {
+  worldMessages.push(message);
+  if (worldMessages.length > MAX_WORLD_MESSAGES) {
+    worldMessages.splice(0, worldMessages.length - MAX_WORLD_MESSAGES);
+  }
+
+  broadcastWorld("world:message", summarizeWorldMessage(message));
+  return message;
 }
 
 function createSeedRooms() {
@@ -104,11 +156,33 @@ const readyBody = t.Object({
   ready: t.Boolean(),
 });
 
+const worldMessageBody = t.Object({
+  author: t.String({ minLength: 1, maxLength: 16 }),
+  text: t.String({ minLength: 1, maxLength: 240 }),
+  className: t.Optional(t.Union([t.Literal("warrior"), t.Literal("mage"), t.Literal("rogue")])),
+});
+
 const app = new Elysia()
-  .onBeforeHandle(({ set }) => {
-    set.headers["Access-Control-Allow-Origin"] = corsOrigin;
-    set.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS";
-    set.headers["Access-Control-Allow-Headers"] = "Content-Type";
+  .onRequest(({ set }) => {
+    applyCors(set);
+  })
+  .onAfterHandle(({ set }) => {
+    applyCors(set);
+  })
+  .onError(({ code, error, set }) => {
+    applyCors(set);
+    set.status ||= code === "VALIDATION" ? 422 : 500;
+
+    if (code === "VALIDATION") {
+      return {
+        error: "Validation error",
+        details: error.message,
+      };
+    }
+
+    return {
+      error: error?.message || "Unexpected server error",
+    };
   })
   .options("/*", () => "ok")
   .get("/", () => ({
@@ -120,7 +194,20 @@ const app = new Elysia()
     status: "ok",
     timestamp: now(),
     roomCount: rooms.size,
+    worldChatCount: worldMessages.length,
   }))
+  .get("/api/chat/world", () => ({
+    messages: worldMessages.map((message) => summarizeWorldMessage(message)),
+  }))
+  .post(
+    "/api/chat/world",
+    ({ body, set }) => {
+      const message = storeWorldMessage(createWorldMessage(body));
+      set.status = 201;
+      return { message: summarizeWorldMessage(message) };
+    },
+    { body: worldMessageBody },
+  )
   .get("/api/rooms", () => ({
     rooms: Array.from(rooms.values()).map((room) => summarizeRoom(room)),
   }))
@@ -249,6 +336,35 @@ const app = new Elysia()
       } else {
         broadcast(roomId, "room:presence", { roomId, connections: sockets?.size ?? 0 });
       }
+    },
+  })
+  .ws("/ws/chat/world", {
+    open(socket) {
+      worldChatSockets.add(socket);
+      socket.send(
+        JSON.stringify({
+          type: "world:snapshot",
+          payload: {
+            messages: worldMessages.map((message) => summarizeWorldMessage(message)),
+          },
+        }),
+      );
+    },
+    message(socket, message) {
+      let parsed;
+      try {
+        parsed = typeof message === "string" ? JSON.parse(message) : message;
+      } catch {
+        socket.send(JSON.stringify({ type: "error", payload: { message: "Invalid JSON" } }));
+        return;
+      }
+
+      if (parsed?.type === "ping") {
+        socket.send(JSON.stringify({ type: "pong", payload: { timestamp: now() } }));
+      }
+    },
+    close(socket) {
+      worldChatSockets.delete(socket);
     },
   })
   .listen({ port, hostname: "0.0.0.0" });

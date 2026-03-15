@@ -353,8 +353,20 @@ body[data-screen="game"] #layout-main {
   grid-template-columns: minmax(0, 1fr);
 }
 
+body[data-screen="chat"] #layout-main {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 body[data-screen="game"] #screen-panel {
   display: none;
+}
+
+body[data-screen="chat"] #preview-stage {
+  display: none;
+}
+
+body[data-screen="chat"] #screen-panel {
+  min-width: 0;
 }
 
 body[data-screen="game"] #preview-stage {
@@ -490,6 +502,118 @@ body[data-screen="game"] #preview-stage {
   color: #f8fafc;
 }
 
+.chat-screen.active {
+  display: grid;
+  gap: 1rem;
+}
+
+.chat-shell {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 0.85rem;
+}
+
+.chat-toolbar,
+.chat-compose {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.chat-toolbar {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: center;
+}
+
+.chat-toolbar-label,
+.chat-field-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.chat-toolbar-value {
+  margin-top: 0.4rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #f8fafc;
+}
+
+.chat-feed {
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  gap: 0.75rem;
+  padding-right: 0.25rem;
+}
+
+.chat-empty {
+  min-height: 100%;
+  display: grid;
+  place-items: center;
+  border: 3px dashed rgba(252, 238, 9, 0.24);
+  padding: 2rem;
+  color: #cbd5e1;
+  background: rgba(10, 14, 20, 0.55);
+}
+
+.chat-message {
+  display: grid;
+  gap: 0.75rem;
+  background:
+    linear-gradient(180deg, rgba(42, 246, 255, 0.06), rgba(42, 246, 255, 0) 24%),
+    linear-gradient(180deg, #151d29, #0d131b);
+}
+
+.chat-message-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
+.chat-message-author {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--pixel-accent);
+}
+
+.chat-message-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.chat-message-time {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.chat-message-body {
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #e2e8f0;
+  line-height: 1.7;
+}
+
+.chat-compose {
+  grid-template-columns: 220px minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.chat-field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.chat-field-message {
+  min-width: 0;
+}
+
 @media (max-width: 1024px) {
   .panel,
   .pixel-card,
@@ -510,6 +634,10 @@ body[data-screen="game"] #preview-stage {
 
   .cyber-title {
     font-size: clamp(2.2rem, 7vw, 4rem);
+  }
+
+  .chat-compose {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -542,5 +670,9 @@ body[data-screen="game"] #preview-stage {
 
   .cyber-button {
     min-height: 48px;
+  }
+
+  .chat-toolbar {
+    grid-template-columns: 1fr;
   }
 }

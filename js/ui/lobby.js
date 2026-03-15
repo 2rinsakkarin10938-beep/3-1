@@ -33,6 +33,7 @@ export function createLobbyScreen(app) {
             <button data-action="character" class="pixel-button cyber-button w-full">${app.t("lobby.createCharacter")}</button>
             <button data-action="room-create" class="pixel-button cyber-button w-full">${app.t("lobby.createRoom")}</button>
             <button data-action="room-join" class="pixel-button cyber-button w-full">${app.t("lobby.joinRoom")}</button>
+            <button data-action="chat" class="pixel-button cyber-button w-full">${app.t("lobby.worldChat")}</button>
             <button data-action="settings" class="pixel-button cyber-button secondary w-full">${app.t("common.settings")}</button>
           </div>
 
@@ -50,6 +51,7 @@ export function createLobbyScreen(app) {
       section.querySelector('[data-action="room-join"]')?.addEventListener("click", () =>
         app.ensureCharacter(() => app.showScreen("roomJoin")),
       );
+      section.querySelector('[data-action="chat"]')?.addEventListener("click", () => app.showScreen("chat"));
       section.querySelector('[data-action="settings"]')?.addEventListener("click", () => app.showScreen("settings"));
     },
 

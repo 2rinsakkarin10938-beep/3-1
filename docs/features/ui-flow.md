@@ -19,6 +19,7 @@
 - Create Character
 - Create Room
 - Join Room
+- World Chat
 - Settings
 
 ## Character Create
@@ -75,9 +76,17 @@
 ไฟล์: `js/ui/settings.js`
 
 รองรับ:
-- ตั้งค่าเสียง
-- rebind ปุ่ม
+- เปลี่ยนภาษา ไทย / อังกฤษ
 - save ลง `localStorage`
+
+## World Chat
+
+ไฟล์: `js/ui/chat.js`
+
+รองรับ:
+- ดึงข้อความล่าสุดจาก server
+- subscribe real-time ผ่าน WebSocket
+- ส่งข้อความในช่อง public ร่วมกันทุกคน
 
 ## Screen Switching Contract
 

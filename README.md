@@ -6,6 +6,7 @@ frontend ตอนนี้ใช้ multi-page flow แบบไฟล์ HTML 
 
 สถานะปัจจุบัน:
 - มี Lobby flow ครบ: สร้างตัวละคร, สร้างห้อง, เข้าร่วมห้อง, ห้องรอ, ตั้งค่า
+- มีเมนู `Chat โลก` สำหรับคุยกันผ่าน server แบบ real-time
 - เก็บ character, room list, settings ไว้ใน `localStorage`
 - เริ่มเกมแบบ local multiplayer ได้จากห้องรอ
 - มี movement 8 ทิศ, วิ่ง, collision, base skills 3 แบบ และ class special
@@ -46,7 +47,7 @@ bun run dev
 deploy production ใช้ `docker-compose.yml` ที่ root repo
 
 services:
-- `web`: Caddy สำหรับ serve Vite build output และ reverse proxy `/api` กับ `/ws`
+- `web`: Caddy สำหรับ serve static multi-page frontend จาก source files และ reverse proxy `/api` กับ `/ws`
 - `server`: ElysiaJS/Bun backend
 
 workflow ที่ [deploy.yml](/home/apichart/3-1/.github/workflows/deploy.yml) ต้องอาศัย DNS ของ domain ชี้มาที่ VPS และเครื่องต้องเปิด `80/443`
@@ -64,6 +65,7 @@ workflow ที่ [deploy.yml](/home/apichart/3-1/.github/workflows/deploy.yml)
 ├── package.json
 ├── vite.config.js
 ├── index.html
+├── chat.html
 ├── character.html
 ├── room-create.html
 ├── room-join.html

@@ -3,6 +3,7 @@ import { Game } from "./game.js";
 import { getDefaultBindings } from "./input.js";
 import { detectLanguage, translate } from "./i18n.js";
 import { createCharacterCreateScreen } from "./ui/character-create.js";
+import { createChatScreen } from "./ui/chat.js";
 import { createLobbyScreen } from "./ui/lobby.js";
 import { createRoomCreateScreen } from "./ui/room-create.js";
 import { createRoomJoinScreen } from "./ui/room-join.js";
@@ -31,9 +32,39 @@ const DEMO_ROOMS = [
   { id: "duel-beta", name: "Duel Beta", maxPlayers: 4, map: "/maps/arena.json", mapLabel: "Arena", players: [] },
 ];
 
+function resolveApiBase() {
+  const configured = (import.meta.env?.VITE_API_BASE ?? "").trim();
+  if (configured) {
+    return configured.replace(/\/$/, "");
+  }
+
+  const { protocol, hostname, port } = window.location;
+  const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
+  if (isLocalhost && port === "5173") {
+    return `${protocol}//${hostname}:3000`;
+  }
+
+  return "";
+}
+
+function resolveWsBase(apiBase) {
+  const configured = (import.meta.env?.VITE_WS_BASE ?? "").trim();
+  if (configured) {
+    return configured.replace(/\/$/, "");
+  }
+
+  if (apiBase) {
+    return apiBase.replace(/^http/, "ws");
+  }
+
+  const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+  return `${protocol}//${window.location.host}`;
+}
+
 const SCREEN_PATHS = {
   lobby: "/index.html",
   characterCreate: "/character.html",
+  chat: "/chat.html",
   roomCreate: "/room-create.html",
   roomJoin: "/room-join.html",
   roomWaiting: "/room-waiting.html",
@@ -44,6 +75,7 @@ const SCREEN_PATHS = {
 const SCREEN_CREATORS = {
   lobby: createLobbyScreen,
   characterCreate: createCharacterCreateScreen,
+  chat: createChatScreen,
   roomCreate: createRoomCreateScreen,
   roomJoin: createRoomJoinScreen,
   roomWaiting: createRoomWaitingScreen,
@@ -112,6 +144,8 @@ const app = {
   currentRoom: loadJSON(STORAGE_KEYS.currentRoom, null),
   rooms: loadJSON(STORAGE_KEYS.rooms, DEMO_ROOMS),
   settings: mergeSettings(loadJSON(STORAGE_KEYS.settings, DEFAULT_SETTINGS)),
+  apiBase: resolveApiBase(),
+  wsBase: "",
   game: null,
   currentScreen: null,
 
@@ -129,6 +163,14 @@ const app = {
 
   mapLabel(value = "Arena") {
     return value === "Arena" ? this.t("map.arena") : value;
+  },
+
+  apiUrl(path) {
+    return this.apiBase ? `${this.apiBase}${path}` : path;
+  },
+
+  websocketUrl(path) {
+    return `${this.wsBase}${path}`;
   },
 
   pathFor(screenName) {
@@ -347,6 +389,8 @@ const app = {
     this.game.start();
   },
 };
+
+app.wsBase = resolveWsBase(app.apiBase);
 
 app.applyChromeText();
 

@@ -14,8 +14,8 @@ error `no configuration file provided: not found` เกิดจาก workflow
 
 ### web
 
-- ใช้ multi-stage build: Node + Vite -> Caddy
-- serve static frontend จาก `dist/`
+- ใช้ Caddy serve static multi-page frontend โดย copy source files ตรงเข้า image
+- ไม่มี SPA fallback ไป `index.html`
 - ฟังผ่าน HTTP ภายใน container
 - reverse proxy `/api/*` และ `/ws/*` ไป service `server`
 
@@ -56,8 +56,7 @@ workflow ที่ `.github/workflows/deploy.yml` จะ:
 1. clone/pull repo ไปที่ `~/gamev1`
 2. export `PROJECT_NAME` และ `APP_DOMAIN`
 3. bind หน้าเว็บไว้ที่ `127.0.0.1:8080`
-4. run `docker compose build --no-cache`
-5. run `docker compose up -d`
+4. run `docker compose up -d --build --force-recreate --remove-orphans`
 
 ## Verification หลัง deploy
 

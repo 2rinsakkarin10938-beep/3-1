@@ -7,6 +7,7 @@
 - `package.json`: Vite frontend scripts และ dependencies
 - `vite.config.js`: Vite config และ copy plugin สำหรับ runtime directories
 - `index.html`: หน้า Lobby หลัก
+- `chat.html`: หน้า World Chat
 - `character.html`: หน้า Create Character
 - `room-create.html`: หน้า Create Room
 - `room-join.html`: หน้า Join Room
@@ -22,11 +23,12 @@
 ## UI Screens
 
 - `js/ui/lobby.js`: หน้า lobby หลัก
+- `js/ui/chat.js`: หน้า world chat
 - `js/ui/character-create.js`: เลือก class และตั้งชื่อ
 - `js/ui/room-create.js`: สร้างห้อง
 - `js/ui/room-join.js`: เข้าร่วมห้องจาก room list
 - `js/ui/room-waiting.js`: waiting room, ready state, add local guest
-- `js/ui/settings.js`: audio และ key bindings
+- `js/ui/settings.js`: เปลี่ยนภาษา interface
 
 ## Game Runtime
 
@@ -66,7 +68,7 @@
 
 - `js/net/local-adapter.js`: local same-screen adapter
 - `js/net/ws-adapter.js`: placeholder for future WebSocket adapter
-- `server/server.js`: ElysiaJS HTTP + websocket room server
+- `server/server.js`: ElysiaJS HTTP + websocket room/chat server
 - `server/package.json`: server runtime/dependency manifest
 
 ## Data
