@@ -15,6 +15,7 @@ frontend รันผ่าน Vite
 
 ```bash
 npm install
+cd server && bun install && cd ..
 npm run dev
 ```
 
@@ -23,6 +24,7 @@ npm run dev
 หมายเหตุ:
 - source frontend ยังอยู่ใน `index.html`, `css/`, `js/`, `maps/`
 - Vite ใช้ `vite.config.js` เพื่อ copy `maps/` และ `assets/` เข้า `dist/` ตอน build
+- คำสั่ง `npm run dev` ที่ root จะรันทั้ง frontend และ server พร้อมกัน
 
 ## Server
 

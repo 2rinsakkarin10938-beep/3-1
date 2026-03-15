@@ -4,10 +4,16 @@
 
 ### แบบง่ายสุด
 
-รัน Vite dev server จาก root ของโปรเจกต์:
+ติดตั้ง dependency ก่อนครั้งแรก:
 
 ```bash
+cd server && bun install && cd ..
 npm install
+```
+
+จากนั้นรัน frontend + server พร้อมกันจาก root ของโปรเจกต์:
+
+```bash
 npm run dev
 ```
 
@@ -17,13 +23,18 @@ npm run dev
 http://localhost:5173
 ```
 
+ถ้าต้องการรันเฉพาะ frontend:
+
+```bash
+npm run dev:web
+```
+
 ## Server Quick Start
 
 online/server scaffold ใช้ Bun + ElysiaJS
 
 ```bash
 cd server
-bun install
 bun run dev
 ```
 
