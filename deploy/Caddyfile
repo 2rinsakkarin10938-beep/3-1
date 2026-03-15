@@ -1,4 +1,6 @@
-:80 {
+{$DOMAIN} {
+  tls /etc/caddy/certs/cert.pem /etc/caddy/certs/key.pem
+
   encode zstd gzip
 
   @api path /api/* /health
