@@ -7,6 +7,7 @@ on:
 env:
   PROJECT_NAME: gamev1
   APP_DOMAIN: gamev1.apichart.dev
+  WEB_HTTP_PORT: 8080
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
@@ -21,7 +22,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: GITHUB_TOKEN,PROJECT_NAME,APP_DOMAIN
+          envs: GITHUB_TOKEN,PROJECT_NAME,APP_DOMAIN,WEB_HTTP_PORT
           script: |
             set -e
             PROJECT_DIR="$HOME/$PROJECT_NAME"
@@ -35,16 +36,16 @@ jobs:
             git fetch --tags origin main
             git reset --hard origin/main
             git clean -fd
-            export PROJECT_NAME APP_DOMAIN
+            export PROJECT_NAME APP_DOMAIN WEB_HTTP_PORT
             docker compose --project-name "$PROJECT_NAME" up -d --build --force-recreate --remove-orphans
             docker compose --project-name "$PROJECT_NAME" ps
 
-            if ! curl -fsSk "https://127.0.0.1/" --resolve "${APP_DOMAIN}:443:127.0.0.1" -H "Host: ${APP_DOMAIN}" > /tmp/gamev1-home.html || ! test -s /tmp/gamev1-home.html; then
+            if ! curl -fsS "http://127.0.0.1:${WEB_HTTP_PORT}/" > /tmp/gamev1-home.html || ! test -s /tmp/gamev1-home.html; then
               docker compose --project-name "$PROJECT_NAME" logs --tail=200
               exit 1
             fi
 
-            if ! curl -fsSk "https://127.0.0.1/health" --resolve "${APP_DOMAIN}:443:127.0.0.1" -H "Host: ${APP_DOMAIN}" > /tmp/gamev1-health.json || ! grep -q '"status"' /tmp/gamev1-health.json; then
+            if ! curl -fsS "http://127.0.0.1:${WEB_HTTP_PORT}/health" > /tmp/gamev1-health.json || ! grep -q '"status"' /tmp/gamev1-health.json; then
               docker compose --project-name "$PROJECT_NAME" logs --tail=200
               exit 1
             fi

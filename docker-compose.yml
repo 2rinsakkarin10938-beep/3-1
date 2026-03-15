@@ -7,12 +7,8 @@ services:
     depends_on:
       - server
     ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      DOMAIN: ${APP_DOMAIN}
+      - "${WEB_HTTP_PORT:-8080}:80"
     volumes:
-      - ./certs:/etc/caddy/certs:ro
       - caddy_data:/data
       - caddy_config:/config
 
