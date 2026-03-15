@@ -30,6 +30,26 @@ error `no configuration file provided: not found` เกิดจาก workflow
 - reverse proxy หลักบนเครื่อง เช่น Nginx/Caddy ที่รับ `80/443`
 - DNS `gamev1.apichart.dev` ชี้มาที่เครื่อง
 
+## Host Caddy Config
+
+ถ้าเครื่องหลักใช้ Caddy ให้เพิ่ม site block นี้ใน `/etc/caddy/Caddyfile`
+
+```caddyfile
+gamev1.apichart.dev {
+  encode zstd gzip
+  reverse_proxy 127.0.0.1:8080
+}
+```
+
+ตัวอย่างไฟล์อยู่ที่ `deploy/Caddyfile.host.example`
+
+หลังแก้แล้วให้รัน:
+
+```bash
+sudo caddy validate --config /etc/caddy/Caddyfile
+sudo systemctl reload caddy
+```
+
 ## Workflow Runtime Assumptions
 
 workflow ที่ `.github/workflows/deploy.yml` จะ:

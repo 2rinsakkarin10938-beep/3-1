@@ -69,6 +69,7 @@
 
 - `docker-compose.yml`: production stack definition
 - `deploy/Caddyfile`: domain routing, static serving, reverse proxy
+- `deploy/Caddyfile.host.example`: ตัวอย่าง Caddy บน VPS host
 - `deploy/web.Dockerfile`: static web image
 - `deploy/server.Dockerfile`: Bun/Elysia server image
 
