@@ -4,7 +4,9 @@ export class ShadowStepSkill extends Skill {
   constructor() {
     super({
       key: "skill4",
+      nameKey: "skill.shadowStep.name",
       name: "Shadow Step",
+      descriptionKey: "skill.shadowStep.description",
       cooldown: 7,
       description: "Teleport behind the nearest enemy and deal crit damage.",
     });

@@ -6,7 +6,13 @@
 
 - `package.json`: Vite frontend scripts และ dependencies
 - `vite.config.js`: Vite config และ copy plugin สำหรับ runtime directories
-- `index.html`: entry point และ layout หลักของหน้า
+- `index.html`: หน้า Lobby หลัก
+- `character.html`: หน้า Create Character
+- `room-create.html`: หน้า Create Room
+- `room-join.html`: หน้า Join Room
+- `room-waiting.html`: หน้า Waiting Room
+- `settings.html`: หน้า Settings
+- `game.html`: หน้า Game
 - `css/game.css`: custom pixel-art styling ที่ทับบน Tailwind utility
 
 ## App Flow

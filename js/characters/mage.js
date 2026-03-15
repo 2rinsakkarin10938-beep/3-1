@@ -4,7 +4,9 @@ export class FireballSkill extends Skill {
   constructor() {
     super({
       key: "skill4",
+      nameKey: "skill.fireball.name",
       name: "Fireball",
+      descriptionKey: "skill.fireball.description",
       cooldown: 4.5,
       description: "High damage projectile with long reach.",
     });

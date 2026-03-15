@@ -1,10 +1,11 @@
 :root {
   --pixel-border: #0b0e13;
-  --pixel-panel: #1b2130;
-  --pixel-panel-alt: #232c40;
-  --pixel-accent: #f2a93b;
-  --pixel-mint: #67d5b5;
-  --pixel-danger: #ef5b5b;
+  --pixel-panel: #101722;
+  --pixel-panel-alt: #182232;
+  --pixel-accent: #fcee09;
+  --pixel-mint: #2af6ff;
+  --pixel-danger: #ff4d6d;
+  --pixel-magenta: #ff3ea5;
 }
 
 * {
@@ -18,11 +19,18 @@ body {
 }
 
 body {
-  font-family: "Outfit", sans-serif;
+  font-family: "Google Sans", sans-serif;
   background:
-    radial-gradient(circle at top left, rgba(103, 213, 181, 0.1), transparent 28%),
-    radial-gradient(circle at bottom right, rgba(242, 169, 59, 0.18), transparent 24%),
-    linear-gradient(180deg, #111318 0%, #0c1018 100%);
+    radial-gradient(circle at top left, rgba(42, 246, 255, 0.08), transparent 22%),
+    radial-gradient(circle at top right, rgba(255, 62, 165, 0.08), transparent 26%),
+    linear-gradient(180deg, #0a0d14 0%, #07090d 100%);
+}
+
+body[data-screen="lobby"] {
+  background:
+    radial-gradient(circle at 12% 18%, rgba(42, 246, 255, 0.18), transparent 18%),
+    radial-gradient(circle at 84% 16%, rgba(255, 62, 165, 0.14), transparent 24%),
+    linear-gradient(135deg, #080a0f 0%, #111723 48%, #06070b 100%);
 }
 
 .page-shell {
@@ -30,6 +38,12 @@ body {
     linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
   background-size: 24px 24px;
+}
+
+body[data-screen="lobby"] .page-shell {
+  background-image:
+    linear-gradient(rgba(252, 238, 9, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(252, 238, 9, 0.04) 1px, transparent 1px);
 }
 
 .panel,
@@ -45,7 +59,9 @@ body {
 .panel,
 .pixel-card,
 .canvas-frame {
-  background: linear-gradient(180deg, var(--pixel-panel-alt), var(--pixel-panel));
+  background:
+    linear-gradient(180deg, rgba(252, 238, 9, 0.04), rgba(252, 238, 9, 0) 16%),
+    linear-gradient(180deg, var(--pixel-panel-alt), var(--pixel-panel));
 }
 
 .pixel-title {
@@ -80,19 +96,27 @@ body {
   min-height: 44px;
   padding: 0.7rem 0.9rem;
   border-radius: 0;
-  background: linear-gradient(180deg, #33425f, #273149);
+  background:
+    linear-gradient(180deg, rgba(252, 238, 9, 0.12), rgba(252, 238, 9, 0) 35%),
+    linear-gradient(180deg, #1b2432, #0f151e);
   color: #f8fafc;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   transition:
     transform 120ms ease,
-    background 120ms ease;
+    background 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease;
 }
 
 .pixel-button:hover {
   transform: translate(-2px, -2px);
-  background: linear-gradient(180deg, #3f5073, #2e3a54);
+  border-color: var(--pixel-accent);
+  color: #0b0e13;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0) 28%),
+    linear-gradient(180deg, #fff677 0%, #fcee09 52%, #d4bb00 52%, #b89d00 100%);
 }
 
 .pixel-button:disabled {
@@ -102,15 +126,21 @@ body {
 }
 
 .pixel-button.secondary {
-  background: linear-gradient(180deg, #1c2436, #171d2c);
+  background:
+    linear-gradient(180deg, rgba(42, 246, 255, 0.16), rgba(42, 246, 255, 0) 35%),
+    linear-gradient(180deg, #162331, #0b1219);
 }
 
 .pixel-button.success {
-  background: linear-gradient(180deg, #29906e, #1b6d53);
+  background:
+    linear-gradient(180deg, rgba(252, 238, 9, 0.14), rgba(252, 238, 9, 0) 35%),
+    linear-gradient(180deg, #202938, #101722);
 }
 
 .pixel-button.danger {
-  background: linear-gradient(180deg, #c24c4c, #913838);
+  background:
+    linear-gradient(180deg, rgba(255, 77, 109, 0.16), rgba(255, 77, 109, 0) 35%),
+    linear-gradient(180deg, #351524, #1a0f15);
 }
 
 .pixel-input,
@@ -235,36 +265,229 @@ input:focus {
   gap: 0.75rem;
 }
 
+body[data-screen="lobby"] #app-header {
+  display: none;
+}
+
+body[data-screen="lobby"] #layout-main {
+  position: relative;
+  display: block;
+}
+
+body[data-screen="lobby"] #screen-panel,
+body[data-screen="lobby"] #preview-stage {
+  position: absolute;
+  inset: 0;
+}
+
+body[data-screen="lobby"] #screen-panel {
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+body[data-screen="lobby"] #screen-root {
+  width: min(100%, 480px);
+  height: auto;
+  min-height: 0;
+}
+
+body[data-screen="lobby"] #preview-stage {
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 74% 16%, rgba(252, 238, 9, 0.22), transparent 12%),
+    radial-gradient(circle at 16% 24%, rgba(42, 246, 255, 0.2), transparent 14%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 28%),
+    linear-gradient(180deg, #0b1017 0%, #101928 44%, #140f17 44%, #0b0c11 100%);
+}
+
+body[data-screen="lobby"] #preview-stage::before,
+body[data-screen="lobby"] #preview-stage::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  pointer-events: none;
+}
+
+body[data-screen="lobby"] #preview-stage::before {
+  height: 58%;
+  background:
+    linear-gradient(90deg, rgba(252, 238, 9, 0.11) 1px, transparent 1px),
+    linear-gradient(rgba(252, 238, 9, 0.11) 1px, transparent 1px);
+  background-size: 64px 64px;
+  opacity: 0.24;
+}
+
+body[data-screen="lobby"] #preview-stage::after {
+  top: 0;
+  background:
+    linear-gradient(180deg, rgba(252, 238, 9, 0.05), rgba(252, 238, 9, 0) 16%),
+    linear-gradient(135deg, rgba(255, 62, 165, 0.08), transparent 25%),
+    radial-gradient(circle at 50% 110%, rgba(0, 0, 0, 0.42), transparent 38%);
+}
+
+body[data-screen="lobby"] #preview-panel {
+  align-items: flex-end;
+  justify-content: flex-end;
+  padding: 1.5rem;
+}
+
+body[data-screen="lobby"] #preview-panel > div {
+  max-width: 260px;
+  padding: 0.9rem 1rem;
+  border: 3px solid rgba(11, 14, 19, 0.8);
+  background:
+    linear-gradient(180deg, rgba(252, 238, 9, 0.12), rgba(252, 238, 9, 0) 26%),
+    rgba(7, 11, 18, 0.74);
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.04) inset, 6px 6px 0 0 rgba(11, 14, 19, 0.84);
+  backdrop-filter: blur(4px);
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+}
+
+body[data-screen="game"] #layout-main {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+body[data-screen="game"] #screen-panel {
+  display: none;
+}
+
+body[data-screen="game"] #preview-stage {
+  min-width: 0;
+}
+
+.lobby-screen {
+  pointer-events: auto;
+}
+
 .lobby-screen.active {
-  display: grid;
-  grid-template-rows: auto auto auto 1fr;
-  align-content: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
 }
 
 .lobby-card-compact {
   min-height: 0;
 }
 
-.lobby-actions {
+.cyber-menu {
+  width: 100%;
   display: grid;
-  gap: 0.65rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  justify-items: center;
 }
 
-.lobby-notes {
-  min-height: 0;
-}
-
-.lobby-notes ul {
-  margin: 0.55rem 0 0;
-  padding-left: 1rem;
+.cyber-logo {
   display: grid;
-  gap: 0.3rem;
+  gap: 0.45rem;
+  text-align: center;
 }
 
-.lobby-notes li {
-  font-size: 0.875rem;
-  line-height: 1.35;
+.cyber-title {
+  font-size: clamp(2.9rem, 6.5vw, 5.4rem);
+  line-height: 1;
+  color: var(--pixel-accent);
+  text-shadow:
+    0 3px 0 #2a2a2a,
+    0 6px 0 rgba(0, 0, 0, 0.35),
+    0 0 24px rgba(252, 238, 9, 0.18);
+}
+
+.cyber-kicker {
+  display: inline-flex;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: #0b0e13;
+  background: var(--pixel-accent);
+  padding: 0.38rem 0.82rem;
+  clip-path: polygon(12px 0, 100% 0, calc(100% - 12px) 100%, 0 100%);
+}
+
+.cyber-subtitle {
+  max-width: 34rem;
+  color: #d1dae6;
+  font-size: 0.92rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.45);
+}
+
+.cyber-menu-buttons {
+  width: min(100%, 380px);
+  display: grid;
+  gap: 0.7rem;
+}
+
+.cyber-button {
+  min-height: 52px;
+  justify-content: flex-start;
+  padding-inline: 1.05rem;
+  border-color: #0b0e13;
+  background:
+    linear-gradient(180deg, rgba(252, 238, 9, 0.16), rgba(252, 238, 9, 0) 32%),
+    linear-gradient(180deg, #1b2431 0%, #151d29 50%, #0e151f 50%, #091019 100%);
+  box-shadow:
+    0 0 0 2px rgba(255, 255, 255, 0.06) inset,
+    0 6px 0 0 #05080d;
+  color: #f3f4f6;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+}
+
+.cyber-button:hover {
+  color: #0b0e13;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 28%),
+    linear-gradient(180deg, #fff677 0%, #fcee09 50%, #d4bb00 50%, #b89d00 100%);
+}
+
+.cyber-button.secondary {
+  background:
+    linear-gradient(180deg, rgba(42, 246, 255, 0.18), rgba(42, 246, 255, 0) 32%),
+    linear-gradient(180deg, #162330 0%, #101a25 50%, #0b1218 50%, #081019 100%);
+}
+
+.cyber-button.secondary:hover {
+  color: #081019;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 28%),
+    linear-gradient(180deg, #8bfeff 0%, #2af6ff 50%, #00bcc6 50%, #00939a 100%);
+}
+
+.cyber-status {
+  width: min(100%, 380px);
+  border: 3px solid rgba(252, 238, 9, 0.82);
+  background:
+    linear-gradient(180deg, rgba(252, 238, 9, 0.16), rgba(252, 238, 9, 0) 24%),
+    rgba(10, 14, 20, 0.82);
+  box-shadow: 0 6px 0 0 rgba(14, 19, 27, 0.85);
+  padding: 0.85rem 1rem;
+  clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+}
+
+.cyber-status-label {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #f4ef8d;
+}
+
+.cyber-status-value {
+  margin-top: 0.4rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f8fafc;
 }
 
 @media (max-width: 1024px) {
@@ -285,8 +508,8 @@ input:focus {
     padding: 0.75rem;
   }
 
-  .lobby-actions {
-    gap: 0.55rem;
+  .cyber-title {
+    font-size: clamp(2.2rem, 7vw, 4rem);
   }
 }
 
@@ -295,15 +518,29 @@ input:focus {
     background-size: 20px 20px;
   }
 
-  .lobby-screen.active {
-    grid-template-rows: auto auto auto auto;
+  body[data-screen="lobby"] #preview-panel {
+    padding: 1rem;
   }
 
-  .lobby-actions {
-    grid-template-columns: 1fr;
+  body[data-screen="lobby"] #preview-panel > div {
+    max-width: 100%;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.04) inset, 4px 4px 0 0 rgba(11, 14, 19, 0.84);
   }
 
   .pixel-title {
     line-height: 1.5;
+  }
+
+  .cyber-menu {
+    gap: 0.8rem;
+  }
+
+  .cyber-menu-buttons,
+  .cyber-status {
+    width: min(100%, 340px);
+  }
+
+  .cyber-button {
+    min-height: 48px;
   }
 }

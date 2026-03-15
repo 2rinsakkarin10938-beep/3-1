@@ -1,9 +1,11 @@
 export class Skill {
-  constructor({ key, name, cooldown, description }) {
+  constructor({ key, name, nameKey, cooldown, description, descriptionKey }) {
     this.key = key;
     this.name = name;
+    this.nameKey = nameKey;
     this.cooldown = cooldown;
     this.description = description;
+    this.descriptionKey = descriptionKey;
     this.cooldownLeft = 0;
   }
 

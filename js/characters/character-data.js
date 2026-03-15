@@ -6,6 +6,7 @@ import { createWarriorSpecial } from "./warrior.js";
 export const CHARACTER_DATA = {
   warrior: {
     key: "warrior",
+    labelKey: "class.warrior.name",
     label: "Warrior",
     hp: 160,
     attack: 18,
@@ -13,11 +14,13 @@ export const CHARACTER_DATA = {
     speed: 122,
     color: "#d97706",
     sprite: "/assets/sprites/warrior.png",
+    specialNameKey: "skill.groundSlam.name",
     specialName: "Ground Slam",
     specialFactory: createWarriorSpecial,
   },
   mage: {
     key: "mage",
+    labelKey: "class.mage.name",
     label: "Mage",
     hp: 92,
     attack: 26,
@@ -25,11 +28,13 @@ export const CHARACTER_DATA = {
     speed: 108,
     color: "#2563eb",
     sprite: "/assets/sprites/mage.png",
+    specialNameKey: "skill.fireball.name",
     specialName: "Fireball",
     specialFactory: createMageSpecial,
   },
   rogue: {
     key: "rogue",
+    labelKey: "class.rogue.name",
     label: "Rogue",
     hp: 118,
     attack: 20,
@@ -37,6 +42,7 @@ export const CHARACTER_DATA = {
     speed: 148,
     color: "#10b981",
     sprite: "/assets/sprites/rogue.png",
+    specialNameKey: "skill.shadowStep.name",
     specialName: "Shadow Step",
     specialFactory: createRogueSpecial,
   },

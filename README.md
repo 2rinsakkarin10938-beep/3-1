@@ -2,11 +2,14 @@
 
 2D top-down pixel art multiplayer prototype built with Vite, Tailwind CSS, and Vanilla JS.
 
+frontend ตอนนี้ใช้ multi-page flow แบบไฟล์ HTML แยกจริง ไม่ใช่ SPA หน้าเดียว
+
 สถานะปัจจุบัน:
 - มี Lobby flow ครบ: สร้างตัวละคร, สร้างห้อง, เข้าร่วมห้อง, ห้องรอ, ตั้งค่า
 - เก็บ character, room list, settings ไว้ใน `localStorage`
 - เริ่มเกมแบบ local multiplayer ได้จากห้องรอ
 - มี movement 8 ทิศ, วิ่ง, collision, base skills 3 แบบ และ class special
+- รองรับ 2 ภาษา: ไทย / อังกฤษ
 - ใช้ renderer แบบ pixel-block fallback ได้แม้ยังไม่มี sprite asset จริง
 
 ## Run
@@ -61,6 +64,12 @@ workflow ที่ [deploy.yml](/home/apichart/3-1/.github/workflows/deploy.yml)
 ├── package.json
 ├── vite.config.js
 ├── index.html
+├── character.html
+├── room-create.html
+├── room-join.html
+├── room-waiting.html
+├── settings.html
+├── game.html
 ├── css/
 ├── assets/
 ├── docs/

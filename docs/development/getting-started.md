@@ -65,6 +65,7 @@ bun run dev
 4. ใน Waiting Room กด Ready ให้ครบทุกคน
 5. Start Game แล้ว canvas ต้องแสดงขึ้น
 6. ขยับ player, วิ่ง, ใช้ skill ได้
+7. เปลี่ยนภาษาใน Settings แล้ว UI/HUD สลับ ไทย/อังกฤษ ได้
 
 ## Syntax Check
 

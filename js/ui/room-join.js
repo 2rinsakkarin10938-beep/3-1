@@ -17,14 +17,14 @@ export function createRoomJoinScreen(app) {
               <div class="flex items-start justify-between gap-3">
                 <div>
                   <p class="text-lg font-semibold">${room.name}</p>
-                  <p class="mt-2 text-sm text-slate-300">${room.players.length}/${room.maxPlayers} players</p>
-                  <p class="mt-1 text-sm text-slate-300">Map: ${room.mapLabel || "Arena"}</p>
+                  <p class="mt-2 text-sm text-slate-300">${room.players.length}/${room.maxPlayers} ${app.t("common.players").toLowerCase()}</p>
+                  <p class="mt-1 text-sm text-slate-300">${app.t("hud.map", { map: app.mapLabel(room.mapLabel || "Arena") })}</p>
                 </div>
                 <div class="status-pill ${room.players.length ? "waiting" : "ready"}">
-                  ${room.players.length ? "waiting" : "open"}
+                  ${room.players.length ? app.t("roomJoin.waiting") : app.t("roomJoin.open")}
                 </div>
               </div>
-              <button data-room-id="${room.id}" class="pixel-button mt-4 w-full">Join Room</button>
+              <button data-room-id="${room.id}" class="pixel-button mt-4 w-full">${app.t("roomJoin.joinButton")}</button>
             </article>
           `,
         )
@@ -33,14 +33,14 @@ export function createRoomJoinScreen(app) {
       section.innerHTML = `
         <div class="flex items-center justify-between gap-3">
           <div>
-            <p class="pixel-title text-base text-accent">Join Room</p>
-            <p class="mt-3 text-sm text-slate-300">Rooms are stored locally to support the prototype flow.</p>
+            <p class="pixel-title text-base text-accent">${app.t("roomJoin.title")}</p>
+            <p class="mt-3 text-sm text-slate-300">${app.t("roomJoin.description")}</p>
           </div>
-          <button data-action="back" class="pixel-button secondary">Back</button>
+          <button data-action="back" class="pixel-button secondary">${app.t("common.back")}</button>
         </div>
 
         <div class="grid gap-3">
-          ${roomCards || '<div class="pixel-card text-sm text-slate-300">No rooms available yet. Create one first.</div>'}
+          ${roomCards || `<div class="pixel-card text-sm text-slate-300">${app.t("roomJoin.empty")}</div>`}
         </div>
       `;
 

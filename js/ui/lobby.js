@@ -1,34 +1,12 @@
-import { CHARACTER_DATA } from "../characters/character-data.js";
-
-function characterSummary(character) {
+function characterStatus(app, character) {
   if (!character) {
-    return `
-      <div class="pixel-card lobby-card-compact">
-        <p class="text-sm text-slate-300">No character created yet.</p>
-        <p class="mt-1 text-sm text-amber-300">Create one before entering any room.</p>
-      </div>
-    `;
+    return app.t("lobby.noCharacterHint");
   }
 
-  const data = CHARACTER_DATA[character.className];
-  return `
-    <div class="pixel-card lobby-card-compact">
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Current Character</p>
-          <p class="mt-1 text-lg font-semibold text-slate-100">${character.name}</p>
-          <p class="mt-1 text-sm text-slate-300">${data.label}</p>
-        </div>
-        <div class="sprite-preview" style="background-color:${data.color}33"></div>
-      </div>
-      <div class="mt-3 grid grid-cols-2 gap-2 text-sm text-slate-300">
-        <p>HP: ${data.hp}</p>
-        <p>ATK: ${data.attack}</p>
-        <p>DEF: ${data.defense}</p>
-        <p>SPD: ${data.speed}</p>
-      </div>
-    </div>
-  `;
+  return app.t("lobby.characterStatus", {
+    name: character.name,
+    className: app.classLabel(character.className),
+  });
 }
 
 export function createLobbyScreen(app) {
@@ -44,29 +22,24 @@ export function createLobbyScreen(app) {
 
     render() {
       section.innerHTML = `
-        <div>
-          <p class="pixel-title text-base text-accent">Lobby</p>
-          <p class="mt-2 text-sm leading-6 text-slate-300">
-            Build a character, tune controls, then host or join a local room.
-          </p>
-        </div>
+        <div class="cyber-menu">
+          <div class="cyber-logo">
+            <p class="cyber-kicker">NETRUN // LOCAL BUILD</p>
+            <p class="pixel-title cyber-title">GAMEV1</p>
+            <p class="cyber-subtitle">${app.t("lobby.description")}</p>
+          </div>
 
-        ${characterSummary(app.character)}
+          <div class="cyber-menu-buttons">
+            <button data-action="character" class="pixel-button cyber-button w-full">${app.t("lobby.createCharacter")}</button>
+            <button data-action="room-create" class="pixel-button cyber-button w-full">${app.t("lobby.createRoom")}</button>
+            <button data-action="room-join" class="pixel-button cyber-button w-full">${app.t("lobby.joinRoom")}</button>
+            <button data-action="settings" class="pixel-button cyber-button secondary w-full">${app.t("common.settings")}</button>
+          </div>
 
-        <div class="lobby-actions">
-          <button data-action="character" class="pixel-button w-full">Create Character</button>
-          <button data-action="room-create" class="pixel-button w-full">Create Room</button>
-          <button data-action="room-join" class="pixel-button w-full">Join Room</button>
-          <button data-action="settings" class="pixel-button secondary w-full">Settings</button>
-        </div>
-
-        <div class="pixel-card lobby-notes">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Milestone Status</p>
-          <ul class="text-slate-300">
-            <li>Lobby and sub-screens are wired with a simple screen manager.</li>
-            <li>Character data and settings persist in local storage.</li>
-            <li>Start a room to launch the canvas-based combat prototype.</li>
-          </ul>
+          <div class="cyber-status">
+            <span class="cyber-status-label">${app.t("lobby.currentCharacter")}</span>
+            <p class="cyber-status-value">${characterStatus(app, app.character)}</p>
+          </div>
         </div>
       `;
 

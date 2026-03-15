@@ -16,7 +16,9 @@ export class DashSkill extends Skill {
   constructor() {
     super({
       key: "skill1",
+      nameKey: "skill.dash.name",
       name: "Dash",
+      descriptionKey: "skill.dash.description",
       cooldown: 2.5,
       description: "Burst forward with brief speed gain.",
     });
@@ -34,7 +36,9 @@ export class StrikeSkill extends Skill {
   constructor() {
     super({
       key: "skill2",
+      nameKey: "skill.strike.name",
       name: "Strike",
+      descriptionKey: "skill.strike.description",
       cooldown: 1.2,
       description: "Short melee hit in a tight cone.",
     });
@@ -52,7 +56,9 @@ export class ShieldSkill extends Skill {
   constructor() {
     super({
       key: "skill3",
+      nameKey: "skill.shield.name",
       name: "Shield",
+      descriptionKey: "skill.shield.description",
       cooldown: 5,
       description: "Temporary damage reduction barrier.",
     });

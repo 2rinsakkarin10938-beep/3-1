@@ -12,11 +12,14 @@ import { TileMap } from "./world/tilemap.js";
 const STEP = 1 / 60;
 
 export class Game {
-  constructor({ canvas, hudRoot, room, settings, onExit }) {
+  constructor({ canvas, hudRoot, room, settings, t, classLabel, mapLabel, onExit }) {
     this.canvas = canvas;
     this.hudRoot = hudRoot;
     this.room = room;
     this.settings = settings;
+    this.t = t;
+    this.classLabel = classLabel;
+    this.mapLabel = mapLabel;
     this.onExit = onExit;
     this.renderer = new Renderer(canvas);
     this.camera = new Camera(canvas.width, canvas.height);
@@ -138,9 +141,9 @@ export class Game {
             const cooling = skill.cooldownLeft > 0;
             return `
               <div class="pixel-card skill-slot ${cooling ? "cooling" : ""}">
-                <p class="text-xs text-slate-400">${index + 1}. ${skill.key === "skill4" ? "Special" : "Base Skill"}</p>
-                <p class="mt-1 font-semibold text-slate-100">${skill.name}</p>
-                <p class="mt-2 text-xs text-slate-300">${cooling ? `${skill.cooldownLeft.toFixed(1)}s cooldown` : skill.description}</p>
+                <p class="text-xs text-slate-400">${index + 1}. ${skill.key === "skill4" ? this.t("hud.specialSkill") : this.t("hud.baseSkill")}</p>
+                <p class="mt-1 font-semibold text-slate-100">${this.t(skill.nameKey ?? skill.name)}</p>
+                <p class="mt-2 text-xs text-slate-300">${cooling ? this.t("hud.cooldown", { seconds: skill.cooldownLeft.toFixed(1) }) : this.t(skill.descriptionKey ?? skill.description)}</p>
               </div>
             `;
           })
@@ -153,10 +156,10 @@ export class Game {
               <div>
                 <p class="text-xs uppercase tracking-[0.2em] text-slate-400">${player.inputProfile}</p>
                 <p class="text-lg font-semibold">${player.name}</p>
-                <p class="text-sm text-slate-300">${player.label}</p>
+                <p class="text-sm text-slate-300">${this.classLabel(player.className)}</p>
               </div>
               <div class="status-pill ${player.active ? "ready" : "waiting"}">
-                ${player.active ? "alive" : "respawning"}
+                ${player.active ? this.t("hud.alive") : this.t("hud.respawning")}
               </div>
             </div>
             <div class="mt-4 bar"><span style="width: ${hpRatio}%"></span></div>
@@ -170,16 +173,16 @@ export class Game {
       <div class="mini-grid">${playerCards}</div>
       <aside class="mini-grid">
         <article class="pixel-card hud-card">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Arena</p>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">${this.t("hud.arena")}</p>
           <p class="mt-2 text-lg font-semibold">${this.room.name}</p>
-          <p class="mt-2 text-sm text-slate-300">Map: ${this.room.mapLabel || "Arena"}</p>
-          <p class="mt-3 text-sm text-slate-300">Shift or Enter runs. Base skills use 1-3 or U-O. Special uses 4 or P.</p>
+          <p class="mt-2 text-sm text-slate-300">${this.t("hud.map", { map: this.mapLabel(this.room.mapLabel || "Arena") })}</p>
+          <p class="mt-3 text-sm text-slate-300">${this.t("hud.controlHint")}</p>
         </article>
         <article class="pixel-card hud-card">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Session</p>
-          <p class="mt-2 text-sm text-slate-300">Players: ${this.players.length}</p>
-          <p class="mt-2 text-sm text-slate-300">Mode: Local multiplayer prototype</p>
-          <button id="leave-match-button" class="pixel-button secondary mt-4 w-full">Return To Lobby</button>
+          <p class="text-xs uppercase tracking-[0.2em] text-slate-400">${this.t("hud.session")}</p>
+          <p class="mt-2 text-sm text-slate-300">${this.t("hud.playerCount", { count: this.players.length })}</p>
+          <p class="mt-2 text-sm text-slate-300">${this.t("hud.mode")}</p>
+          <button id="leave-match-button" class="pixel-button secondary mt-4 w-full">${this.t("hud.returnLobby")}</button>
         </article>
       </aside>
     `;

@@ -4,7 +4,9 @@ export class GroundSlamSkill extends Skill {
   constructor() {
     super({
       key: "skill4",
+      nameKey: "skill.groundSlam.name",
       name: "Ground Slam",
+      descriptionKey: "skill.groundSlam.description",
       cooldown: 8,
       description: "AoE shockwave that damages and stuns nearby enemies.",
     });

@@ -1,26 +1,26 @@
 import { CHARACTER_DATA } from "../characters/character-data.js";
 
-function playerRow(player, isHostPlayer) {
+function playerRow(app, player, isHostPlayer) {
   const data = CHARACTER_DATA[player.className];
   return `
     <article class="pixel-card">
       <div class="flex items-start justify-between gap-3">
         <div>
           <p class="text-lg font-semibold">${player.name}</p>
-          <p class="mt-1 text-sm text-slate-300">${data.label}</p>
-          <p class="mt-1 text-xs uppercase tracking-[0.2em] text-slate-400">${player.inputProfile || "observer"}</p>
+          <p class="mt-1 text-sm text-slate-300">${app.classLabel(player.className)}</p>
+          <p class="mt-1 text-xs uppercase tracking-[0.2em] text-slate-400">${player.inputProfile || app.t("roomWaiting.observer")}</p>
         </div>
         <div class="status-pill ${player.ready ? "ready" : "waiting"}">
-          ${player.ready ? "ready" : "not ready"}
+          ${player.ready ? app.t("roomWaiting.ready") : app.t("roomWaiting.notReady")}
         </div>
       </div>
       <div class="mt-4 flex flex-wrap gap-3">
         <button data-toggle-ready="${player.id}" class="pixel-button ${player.ready ? "danger" : "success"}">
-          ${player.ready ? "Cancel" : "Ready"}
+          ${player.ready ? app.t("common.cancel") : app.t("common.ready")}
         </button>
         ${
           !isHostPlayer
-            ? `<button data-remove-player="${player.id}" class="pixel-button secondary">Remove</button>`
+            ? `<button data-remove-player="${player.id}" class="pixel-button secondary">${app.t("roomWaiting.remove")}</button>`
             : ""
         }
       </div>
@@ -43,8 +43,8 @@ export function createRoomWaitingScreen(app) {
       if (!app.currentRoom) {
         section.innerHTML = `
           <div class="pixel-card">
-            <p class="text-sm text-slate-300">No active room selected.</p>
-            <button data-action="back" class="pixel-button mt-4">Back To Lobby</button>
+            <p class="text-sm text-slate-300">${app.t("roomWaiting.noRoom")}</p>
+            <button data-action="back" class="pixel-button mt-4">${app.t("roomWaiting.backLobby")}</button>
           </div>
         `;
         section.querySelector('[data-action="back"]')?.addEventListener("click", () => app.showScreen("lobby"));
@@ -52,21 +52,21 @@ export function createRoomWaitingScreen(app) {
       }
 
       const playersMarkup = app.currentRoom.players
-        .map((player) => playerRow(player, player.inputProfile === "player1"))
+        .map((player) => playerRow(app, player, player.inputProfile === "player1"))
         .join("");
 
       section.innerHTML = `
         <div class="flex items-center justify-between gap-3">
           <div>
-            <p class="pixel-title text-base text-accent">Waiting Room</p>
-            <p class="mt-3 text-sm text-slate-300">${app.currentRoom.name} • ${app.currentRoom.players.length}/${app.currentRoom.maxPlayers} players</p>
+            <p class="pixel-title text-base text-accent">${app.t("roomWaiting.title")}</p>
+            <p class="mt-3 text-sm text-slate-300">${app.t("roomWaiting.roomPlayers", { name: app.currentRoom.name, count: app.currentRoom.players.length, max: app.currentRoom.maxPlayers })}</p>
           </div>
-          <button data-action="back" class="pixel-button secondary">Back</button>
+          <button data-action="back" class="pixel-button secondary">${app.t("common.back")}</button>
         </div>
 
         <div class="pixel-card">
           <p class="text-sm text-slate-300">
-            Ready every player before starting. The prototype supports two controllable local players; extra slots remain visible for future networking.
+            ${app.t("roomWaiting.description")}
           </p>
         </div>
 
@@ -78,14 +78,14 @@ export function createRoomWaitingScreen(app) {
             class="pixel-button"
             ${app.currentRoom.players.length >= app.currentRoom.maxPlayers ? "disabled" : ""}
           >
-            Add Local Player
+            ${app.t("roomWaiting.addLocalPlayer")}
           </button>
           <button
             data-action="start"
             class="pixel-button success"
             ${app.canStartRoom() ? "" : "disabled"}
           >
-            Start Game
+            ${app.t("roomWaiting.startGame")}
           </button>
         </div>
       `;

@@ -32,64 +32,40 @@
     />
     <link rel="stylesheet" href="/css/game.css" />
   </head>
-  <body data-page="lobby" data-screen="lobby" class="h-screen overflow-hidden bg-ink text-slate-100">
+  <body data-page="roomCreate" data-screen="roomCreate" class="h-screen overflow-hidden bg-ink text-slate-100">
     <div class="page-shell h-screen overflow-hidden px-3 py-3 md:px-5 md:py-4">
       <div class="mx-auto flex h-full max-w-7xl flex-col gap-3">
         <header id="app-header" class="panel flex items-center justify-between gap-4 px-4 py-3">
           <div>
             <p id="app-title" class="pixel-title text-accent">Pixel Arena</p>
-            <p id="app-subtitle" class="mt-1 text-xs text-slate-300 md:text-sm">
-              Top-down local multiplayer prototype
-            </p>
+            <p id="app-subtitle" class="mt-1 text-xs text-slate-300 md:text-sm">Top-down local multiplayer prototype</p>
           </div>
           <div class="text-right text-[10px] text-slate-400 md:text-xs">
             <p id="control-hint-player1">Player 1: WASD + Shift + 1-4</p>
             <p id="control-hint-player2">Player 2: Arrows + Enter + U I O P</p>
           </div>
         </header>
-
         <main id="layout-main" class="grid min-h-0 flex-1 gap-3 lg:grid-cols-[360px_minmax(0,1fr)]">
           <section id="screen-panel" class="panel min-h-0 overflow-hidden">
             <div id="screen-root" class="h-full"></div>
           </section>
-
           <section id="preview-stage" class="panel relative min-h-0 overflow-hidden">
-            <div
-              id="canvas-shell"
-              class="hidden h-full min-h-0 flex-col gap-3 p-4"
-            >
-              <div
-                id="game-hud"
-                class="grid gap-3 md:grid-cols-[minmax(0,1fr)_260px]"
-              ></div>
+            <div id="canvas-shell" class="hidden h-full min-h-0 flex-col gap-3 p-4">
+              <div id="game-hud" class="grid gap-3 md:grid-cols-[minmax(0,1fr)_260px]"></div>
               <div class="canvas-frame flex-1 overflow-hidden">
-                <canvas
-                  id="game-canvas"
-                  width="960"
-                  height="640"
-                  class="h-full w-full"
-                ></canvas>
+                <canvas id="game-canvas" width="960" height="640" class="h-full w-full"></canvas>
               </div>
             </div>
-
-            <div
-              id="preview-panel"
-              class="flex h-full min-h-0 items-center justify-center p-5 text-center text-slate-300"
-            >
+            <div id="preview-panel" class="flex h-full min-h-0 items-center justify-center p-5 text-center text-slate-300">
               <div class="max-w-md">
                 <p id="preview-title" class="pixel-title text-lg text-mint">Lobby Preview</p>
-                <p id="preview-description" class="mt-4 text-sm leading-7 text-slate-300">
-                  Start from the lobby, create a character, open a room, and launch a
-                  same-screen match. The game canvas replaces this panel when the room
-                  starts.
-                </p>
+                <p id="preview-description" class="mt-4 text-sm leading-7 text-slate-300">Start from the lobby, create a character, open a room, and launch a same-screen match. The game canvas replaces this panel when the room starts.</p>
               </div>
             </div>
           </section>
         </main>
       </div>
     </div>
-
     <script type="module" src="/js/main.js"></script>
   </body>
 </html>

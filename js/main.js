@@ -1,6 +1,7 @@
 import { getCharacterDefinition } from "./characters/character-data.js";
 import { Game } from "./game.js";
 import { getDefaultBindings } from "./input.js";
+import { detectLanguage, translate } from "./i18n.js";
 import { createCharacterCreateScreen } from "./ui/character-create.js";
 import { createLobbyScreen } from "./ui/lobby.js";
 import { createRoomCreateScreen } from "./ui/room-create.js";
@@ -10,11 +11,13 @@ import { createSettingsScreen } from "./ui/settings.js";
 
 const STORAGE_KEYS = {
   character: "pixel-arena-character",
+  currentRoom: "pixel-arena-current-room",
   rooms: "pixel-arena-rooms",
   settings: "pixel-arena-settings",
 };
 
 const DEFAULT_SETTINGS = {
+  language: detectLanguage(),
   audio: {
     master: 70,
     sfx: 80,
@@ -27,6 +30,25 @@ const DEMO_ROOMS = [
   { id: "arena-alpha", name: "Arena Alpha", maxPlayers: 2, map: "/maps/arena.json", mapLabel: "Arena", players: [] },
   { id: "duel-beta", name: "Duel Beta", maxPlayers: 4, map: "/maps/arena.json", mapLabel: "Arena", players: [] },
 ];
+
+const SCREEN_PATHS = {
+  lobby: "/index.html",
+  characterCreate: "/character.html",
+  roomCreate: "/room-create.html",
+  roomJoin: "/room-join.html",
+  roomWaiting: "/room-waiting.html",
+  settings: "/settings.html",
+  game: "/game.html",
+};
+
+const SCREEN_CREATORS = {
+  lobby: createLobbyScreen,
+  characterCreate: createCharacterCreateScreen,
+  roomCreate: createRoomCreateScreen,
+  roomJoin: createRoomJoinScreen,
+  roomWaiting: createRoomWaitingScreen,
+  settings: createSettingsScreen,
+};
 
 function loadJSON(key, fallback) {
   try {
@@ -48,6 +70,7 @@ function uid(prefix) {
 
 function mergeSettings(savedSettings) {
   return {
+    language: savedSettings?.language ?? DEFAULT_SETTINGS.language,
     audio: {
       ...DEFAULT_SETTINGS.audio,
       ...(savedSettings?.audio ?? {}),
@@ -76,21 +99,71 @@ function cloneCharacter(character, overrides = {}) {
   };
 }
 
+const pageName = document.body.dataset.page || "lobby";
+
 const app = {
+  pageName,
   screenRoot: document.querySelector("#screen-root"),
   canvasShell: document.querySelector("#canvas-shell"),
   previewPanel: document.querySelector("#preview-panel"),
   canvas: document.querySelector("#game-canvas"),
   hudRoot: document.querySelector("#game-hud"),
   character: loadJSON(STORAGE_KEYS.character, null),
+  currentRoom: loadJSON(STORAGE_KEYS.currentRoom, null),
   rooms: loadJSON(STORAGE_KEYS.rooms, DEMO_ROOMS),
   settings: mergeSettings(loadJSON(STORAGE_KEYS.settings, DEFAULT_SETTINGS)),
-  currentRoom: null,
   game: null,
-  screens: {},
+  currentScreen: null,
+
+  t(key, params) {
+    return translate(this.settings.language, key, params);
+  },
+
+  classLabel(className) {
+    return this.t(`class.${className}.name`);
+  },
+
+  classAllyLabel(className) {
+    return this.t(`class.${className}.ally`);
+  },
+
+  mapLabel(value = "Arena") {
+    return value === "Arena" ? this.t("map.arena") : value;
+  },
+
+  pathFor(screenName) {
+    return SCREEN_PATHS[screenName] ?? SCREEN_PATHS.lobby;
+  },
+
+  applyChromeText() {
+    document.documentElement.lang = this.settings.language;
+    document.title = this.t("app.windowTitle");
+    document.body.dataset.screen = this.pageName;
+
+    const bindings = [
+      ["#app-title", this.t("app.title")],
+      ["#app-subtitle", this.t("app.subtitle")],
+      ["#control-hint-player1", this.t("app.controlHint.player1")],
+      ["#control-hint-player2", this.t("app.controlHint.player2")],
+      ["#preview-title", this.t("preview.title")],
+      ["#preview-description", this.t("preview.description")],
+    ];
+
+    bindings.forEach(([selector, text]) => {
+      document.querySelector(selector)?.replaceChildren(document.createTextNode(text));
+    });
+  },
 
   persistCharacter() {
     saveJSON(STORAGE_KEYS.character, this.character);
+  },
+
+  persistCurrentRoom() {
+    if (this.currentRoom) {
+      saveJSON(STORAGE_KEYS.currentRoom, this.currentRoom);
+    } else {
+      localStorage.removeItem(STORAGE_KEYS.currentRoom);
+    }
   },
 
   persistRooms() {
@@ -101,20 +174,44 @@ const app = {
     saveJSON(STORAGE_KEYS.settings, this.settings);
   },
 
+  setLanguage(language) {
+    this.settings.language = language;
+    this.persistSettings();
+    this.applyChromeText();
+    this.refreshScreens();
+    this.game?.updateHud();
+  },
+
+  navigate(screenName) {
+    window.location.href = this.pathFor(screenName);
+  },
+
+  showScreen(screenName) {
+    if (screenName === this.pageName) {
+      this.currentScreen?.render?.();
+      return;
+    }
+
+    this.navigate(screenName);
+  },
+
+  refreshScreens() {
+    this.currentScreen?.render?.();
+  },
+
   ensureCharacter(callback) {
     if (this.character) {
       callback();
       return;
     }
 
-    this.showScreen("characterCreate");
+    this.navigate("characterCreate");
   },
 
   setCharacter(character) {
     this.character = character;
     this.persistCharacter();
-    this.refreshScreens();
-    this.showScreen("lobby");
+    this.navigate("lobby");
   },
 
   createRoom(payload) {
@@ -146,13 +243,13 @@ const app = {
       nextRoom.players.unshift(cloneCharacter(this.character, { ready: false, inputProfile: "player1" }));
     }
 
-    this.currentRoom = nextRoom;
     this.syncRoom(nextRoom);
-    this.showScreen("roomWaiting");
+    this.navigate("roomWaiting");
   },
 
   syncRoom(room) {
     this.currentRoom = structuredClone(room);
+    this.persistCurrentRoom();
     this.rooms = this.rooms.map((entry) => (entry.id === room.id ? structuredClone(room) : entry));
     this.persistRooms();
     this.refreshScreens();
@@ -180,10 +277,9 @@ const app = {
 
     const options = ["mage", "rogue", "warrior"];
     const nextClass = options[(this.currentRoom.players.length - 1) % options.length];
-    const definition = getCharacterDefinition(nextClass);
     this.currentRoom.players.push({
       id: uid("player"),
-      name: `${definition.label} Ally`,
+      name: this.classAllyLabel(nextClass),
       className: nextClass,
       ready: false,
       owner: "local-guest",
@@ -205,58 +301,57 @@ const app = {
     return Boolean(this.currentRoom?.players.length) && this.currentRoom.players.every((player) => player.ready);
   },
 
-  async startGame() {
+  startGame() {
     if (!this.currentRoom || !this.canStartRoom()) {
       return;
     }
 
-    this.canvasShell.classList.remove("hidden");
-    this.previewPanel.classList.add("hidden");
+    this.persistCurrentRoom();
+    this.navigate("game");
+  },
 
-    Object.values(this.screens).forEach((screen) => screen.hide());
+  async mountScreen() {
+    const screenFactory = SCREEN_CREATORS[this.pageName];
+    if (!screenFactory || !this.screenRoot) {
+      return;
+    }
+
+    this.currentScreen = screenFactory(this);
+    this.currentScreen.init(this.screenRoot);
+    this.currentScreen.show();
+  },
+
+  async mountGame() {
+    if (!this.currentRoom) {
+      this.navigate("lobby");
+      return;
+    }
+
+    this.canvasShell?.classList.remove("hidden");
+    this.previewPanel?.classList.add("hidden");
+
     this.game?.stop();
-
     this.game = new Game({
       canvas: this.canvas,
       hudRoot: this.hudRoot,
       room: this.currentRoom,
       settings: this.settings,
+      t: this.t.bind(this),
+      classLabel: this.classLabel.bind(this),
+      mapLabel: this.mapLabel.bind(this),
       onExit: () => {
-        this.canvasShell.classList.add("hidden");
-        this.previewPanel.classList.remove("hidden");
-        this.showScreen("lobby");
+        this.navigate("lobby");
       },
     });
     await this.game.init();
     this.game.start();
   },
-
-  showScreen(name) {
-    if (this.game && !this.canvasShell.classList.contains("hidden")) {
-      this.game.stop();
-      this.canvasShell.classList.add("hidden");
-      this.previewPanel.classList.remove("hidden");
-    }
-
-    Object.values(this.screens).forEach((screen) => screen.hide());
-    this.screens[name].show();
-  },
-
-  refreshScreens() {
-    Object.values(this.screens).forEach((screen) => screen.render?.());
-  },
 };
 
-const screens = {
-  lobby: createLobbyScreen(app),
-  characterCreate: createCharacterCreateScreen(app),
-  roomCreate: createRoomCreateScreen(app),
-  roomJoin: createRoomJoinScreen(app),
-  roomWaiting: createRoomWaitingScreen(app),
-  settings: createSettingsScreen(app),
-};
+app.applyChromeText();
 
-app.screens = screens;
-
-Object.values(screens).forEach((screen) => screen.init(app.screenRoot));
-app.showScreen("lobby");
+if (pageName === "game") {
+  await app.mountGame();
+} else {
+  await app.mountScreen();
+}
