@@ -35,6 +35,7 @@ jobs:
             git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
             git fetch --tags origin main
             git reset --hard origin/main
+            sudo rm -rf certs/ 2>/dev/null || true
             git clean -fd
             export PROJECT_NAME APP_DOMAIN WEB_HTTP_PORT
             docker compose --project-name "$PROJECT_NAME" up -d --build --force-recreate --remove-orphans
