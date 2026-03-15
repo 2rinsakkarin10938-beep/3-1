@@ -4,6 +4,8 @@
 
 ## Entry And Shell
 
+- `package.json`: Vite frontend scripts และ dependencies
+- `vite.config.js`: Vite config และ copy plugin สำหรับ runtime directories
 - `index.html`: entry point และ layout หลักของหน้า
 - `css/game.css`: custom pixel-art styling ที่ทับบน Tailwind utility
 
@@ -70,7 +72,7 @@
 - `docker-compose.yml`: production stack definition
 - `deploy/Caddyfile`: domain routing, static serving, reverse proxy
 - `deploy/Caddyfile.host.example`: ตัวอย่าง Caddy บน VPS host
-- `deploy/web.Dockerfile`: static web image
+- `deploy/web.Dockerfile`: Vite build + Caddy runtime image
 - `deploy/server.Dockerfile`: Bun/Elysia server image
 
 ## ถ้าจะเปลี่ยนเรื่องไหน ดูที่ไหน

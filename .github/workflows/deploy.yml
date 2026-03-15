@@ -8,12 +8,13 @@ env:
   PROJECT_NAME: gamev1
   APP_DOMAIN: gamev1.apichart.dev
   WEB_HTTP_PORT: 8080
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1

@@ -12,10 +12,17 @@
 ### 1. Syntax
 
 ```bash
-bash -lc 'for f in $(find js server -name "*.js" | sort); do node --check "$f" || exit 1; done'
+bash -lc 'for f in $(find js server -name "*.js" | sort); do node --check "$f" || exit 1; done && node --check vite.config.js'
 ```
 
-### 2. Open In Browser
+### 2. Frontend Build
+
+```bash
+npm install
+npm run build
+```
+
+### 3. Open In Browser
 
 เช็ก flow หลัก:
 1. เข้า Lobby

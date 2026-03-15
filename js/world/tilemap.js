@@ -28,7 +28,7 @@ const fallbackMap = (() => {
 })();
 
 export class TileMap {
-  static async load(path = "./maps/arena.json") {
+  static async load(path = "/maps/arena.json") {
     try {
       const response = await fetch(path);
       if (!response.ok) {

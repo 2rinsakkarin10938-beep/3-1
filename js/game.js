@@ -35,7 +35,7 @@ export class Game {
 
   async init() {
     await this.assetLoader.loadAll();
-    this.tilemap = await TileMap.load(this.room.map || "./maps/arena.json");
+    this.tilemap = await TileMap.load(this.room.map || "/maps/arena.json");
     this.input = new InputManager(this.settings.controls);
     this.input.attach();
 

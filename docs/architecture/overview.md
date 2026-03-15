@@ -3,7 +3,7 @@
 ## เป้าหมาย
 
 โปรเจกต์นี้เป็น browser game prototype ที่เน้น:
-- เริ่มใช้งานได้เร็วจาก `index.html`
+- เริ่มพัฒนาและ build ได้เร็วด้วย Vite
 - แยก UI flow ออกจาก game loop
 - รองรับ local multiplayer ก่อน แล้วค่อยต่อยอด online multiplayer
 - ใช้โมดูล Vanilla JS แบบตรงไปตรงมา อ่านง่าย และ debug ง่าย
@@ -82,10 +82,11 @@
 ## Design Decisions ปัจจุบัน
 
 - ใช้ `localStorage` แทน backend จริงใน phase แรก
-- map โหลดผ่าน `fetch()` แต่มี embedded fallback เพื่อให้เปิดจาก file ได้
+- map โหลดผ่าน `fetch()` และมี embedded fallback ถ้า load ไม่สำเร็จ
 - local multiplayer ใช้ adapter เดียวกับที่เตรียมไว้สำหรับ online mode
 - HUD render เป็น HTML แยกจาก canvas เพื่อ iterate UI ได้เร็ว
 - server scaffold ใช้ ElysiaJS บน Bun เพื่อให้ HTTP + WebSocket อยู่ใน runtime เดียวกัน
+- frontend ใช้ Vite แต่ยังคง code structure แบบ Vanilla JS modules
 
 ## ขอบเขตที่ยังไม่เสร็จ
 

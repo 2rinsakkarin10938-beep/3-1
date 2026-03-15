@@ -14,8 +14,8 @@ error `no configuration file provided: not found` เกิดจาก workflow
 
 ### web
 
-- ใช้ Caddy
-- serve static frontend
+- ใช้ multi-stage build: Node + Vite -> Caddy
+- serve static frontend จาก `dist/`
 - ฟังผ่าน HTTP ภายใน container
 - reverse proxy `/api/*` และ `/ws/*` ไป service `server`
 

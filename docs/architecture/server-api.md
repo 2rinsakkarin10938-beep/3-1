@@ -53,7 +53,7 @@ body:
 {
   "name": "Arena Room",
   "maxPlayers": 4,
-  "map": "./maps/arena.json",
+  "map": "/maps/arena.json",
   "mapLabel": "Arena"
 }
 ```

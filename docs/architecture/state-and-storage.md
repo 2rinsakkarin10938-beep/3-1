@@ -32,7 +32,7 @@
   id: "room-xxxx",
   name: "Arena Room",
   maxPlayers: 2,
-  map: "./maps/arena.json",
+  map: "/maps/arena.json",
   mapLabel: "Arena",
   ownerId: "local-host",
   status: "waiting",

@@ -2,4 +2,6 @@ server/node_modules/
 server/.env
 server/bun.lock
 server/bun.lockb
+node_modules/
+dist/
 .env

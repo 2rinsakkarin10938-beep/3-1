@@ -37,7 +37,7 @@ export function createRoomCreateScreen(app) {
           <label class="pixel-card block">
             <p class="text-xs uppercase tracking-[0.2em] text-slate-400">Map</p>
             <select id="room-map" class="mt-3">
-              <option value="./maps/arena.json">Arena</option>
+              <option value="/maps/arena.json">Arena</option>
             </select>
           </label>
         </div>

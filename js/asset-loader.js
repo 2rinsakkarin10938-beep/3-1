@@ -1,9 +1,9 @@
 const IMAGE_MANIFEST = {
-  warrior: "./assets/sprites/warrior.png",
-  mage: "./assets/sprites/mage.png",
-  rogue: "./assets/sprites/rogue.png",
-  tileset: "./assets/tiles/tileset.png",
-  skillIcons: "./assets/ui/skill-icons.png",
+  warrior: "/assets/sprites/warrior.png",
+  mage: "/assets/sprites/mage.png",
+  rogue: "/assets/sprites/rogue.png",
+  tileset: "/assets/tiles/tileset.png",
+  skillIcons: "/assets/ui/skill-icons.png",
 };
 
 function loadImage(src) {

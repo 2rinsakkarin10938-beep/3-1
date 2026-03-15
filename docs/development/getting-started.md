@@ -4,20 +4,17 @@
 
 ### แบบง่ายสุด
 
-เปิด `index.html` ใน browser
-
-### แบบแนะนำ
-
-รัน static server จาก root ของโปรเจกต์ เช่น:
+รัน Vite dev server จาก root ของโปรเจกต์:
 
 ```bash
-python3 -m http.server
+npm install
+npm run dev
 ```
 
 แล้วเปิด browser ไปที่:
 
 ```text
-http://localhost:8000
+http://localhost:5173
 ```
 
 ## Server Quick Start
@@ -70,7 +67,7 @@ bash -lc 'for f in $(find js server -name "*.js" | sort); do node --check "$f" |
 
 - map ใช้ `fetch()` แต่มี fallback map ฝังในโค้ด
 - asset image ตอนนี้ optional เพราะ renderer วาด fallback shapes ได้
-- project ยังไม่มี bundler หรือ package manager
+- frontend ใช้ Vite และ root `package.json`
 - ฝั่ง server ใช้ package manager/runtime ของ Bun แยกจากหน้า client
 
 ## เมื่อเพิ่ม feature ใหม่

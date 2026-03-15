@@ -1,6 +1,6 @@
 # Pixel Arena Prototype
 
-2D top-down pixel art multiplayer prototype built with HTML, Tailwind CSS, and Vanilla JS.
+2D top-down pixel art multiplayer prototype built with Vite, Tailwind CSS, and Vanilla JS.
 
 สถานะปัจจุบัน:
 - มี Lobby flow ครบ: สร้างตัวละคร, สร้างห้อง, เข้าร่วมห้อง, ห้องรอ, ตั้งค่า
@@ -11,11 +11,18 @@
 
 ## Run
 
-เปิด `index.html` ใน browser ได้ทันที
+frontend รันผ่าน Vite
+
+```bash
+npm install
+npm run dev
+```
+
+แล้วเปิด `http://localhost:5173`
 
 หมายเหตุ:
-- ถ้าเปิดผ่าน `file://` ระบบจะยังทำงานได้ เพราะ tilemap มี fallback ในโค้ด
-- ถ้าต้องการ flow ที่ใกล้ production มากขึ้น ใช้ static server เช่น `python3 -m http.server`
+- source frontend ยังอยู่ใน `index.html`, `css/`, `js/`, `maps/`
+- Vite ใช้ `vite.config.js` เพื่อ copy `maps/` และ `assets/` เข้า `dist/` ตอน build
 
 ## Server
 
@@ -34,7 +41,7 @@ bun run dev
 deploy production ใช้ `docker-compose.yml` ที่ root repo
 
 services:
-- `web`: Caddy สำหรับ `gamev1.apichart.dev`, serve static frontend และ reverse proxy `/api` กับ `/ws`
+- `web`: Caddy สำหรับ serve Vite build output และ reverse proxy `/api` กับ `/ws`
 - `server`: ElysiaJS/Bun backend
 
 workflow ที่ [deploy.yml](/home/apichart/3-1/.github/workflows/deploy.yml) ต้องอาศัย DNS ของ domain ชี้มาที่ VPS และเครื่องต้องเปิด `80/443`
@@ -49,8 +56,11 @@ workflow ที่ [deploy.yml](/home/apichart/3-1/.github/workflows/deploy.yml)
 
 ```text
 3-1/
+├── package.json
+├── vite.config.js
 ├── index.html
 ├── css/
+├── assets/
 ├── docs/
 ├── js/
 ├── maps/

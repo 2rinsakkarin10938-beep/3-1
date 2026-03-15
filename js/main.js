@@ -24,8 +24,8 @@ const DEFAULT_SETTINGS = {
 };
 
 const DEMO_ROOMS = [
-  { id: "arena-alpha", name: "Arena Alpha", maxPlayers: 2, map: "./maps/arena.json", mapLabel: "Arena", players: [] },
-  { id: "duel-beta", name: "Duel Beta", maxPlayers: 4, map: "./maps/arena.json", mapLabel: "Arena", players: [] },
+  { id: "arena-alpha", name: "Arena Alpha", maxPlayers: 2, map: "/maps/arena.json", mapLabel: "Arena", players: [] },
+  { id: "duel-beta", name: "Duel Beta", maxPlayers: 4, map: "/maps/arena.json", mapLabel: "Arena", players: [] },
 ];
 
 function loadJSON(key, fallback) {
