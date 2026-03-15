@@ -16,7 +16,7 @@ error `no configuration file provided: not found` เกิดจาก workflow
 
 - ใช้ Caddy
 - serve static frontend
-- terminate TLS ให้อัตโนมัติเมื่อ domain ชี้มาถูกต้อง
+- ฟังผ่าน HTTP ภายใน container
 - reverse proxy `/api/*` และ `/ws/*` ไป service `server`
 
 ### server
@@ -27,7 +27,7 @@ error `no configuration file provided: not found` เกิดจาก workflow
 ## สิ่งที่ต้องมีบน VPS
 
 - Docker และ Docker Compose
-- port `80` และ `443` เปิด
+- reverse proxy หลักบนเครื่อง เช่น Nginx/Caddy ที่รับ `80/443`
 - DNS `gamev1.apichart.dev` ชี้มาที่เครื่อง
 
 ## Workflow Runtime Assumptions
@@ -35,14 +35,16 @@ error `no configuration file provided: not found` เกิดจาก workflow
 workflow ที่ `.github/workflows/deploy.yml` จะ:
 1. clone/pull repo ไปที่ `~/gamev1`
 2. export `PROJECT_NAME` และ `APP_DOMAIN`
-3. run `docker compose build --no-cache`
-4. run `docker compose up -d`
+3. bind หน้าเว็บไว้ที่ `127.0.0.1:8080`
+4. run `docker compose build --no-cache`
+5. run `docker compose up -d`
 
 ## Verification หลัง deploy
 
 เช็กอย่างน้อย:
 - `https://gamev1.apichart.dev`
 - `https://gamev1.apichart.dev/health`
+- `curl http://127.0.0.1:8080/health`
 - `docker compose ps`
 - `docker compose logs -f`
 
@@ -50,7 +52,7 @@ workflow ที่ `.github/workflows/deploy.yml` จะ:
 
 ตรวจตามลำดับนี้:
 1. DNS ชี้ IP ถูกหรือยัง
-2. firewall เปิด `80/443` หรือยัง
-3. Caddy ขอ certificate สำเร็จหรือไม่
+2. reverse proxy หลักชี้มาที่ `127.0.0.1:8080` หรือยัง
+3. firewall เปิด `80/443` หรือยัง
 4. container `server` ขึ้นหรือ crash
 5. `CORS_ORIGIN` ตรงกับ domain หรือไม่

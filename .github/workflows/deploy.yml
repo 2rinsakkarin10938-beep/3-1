@@ -7,6 +7,7 @@ on:
 env:
   PROJECT_NAME: gamev1
   APP_DOMAIN: gamev1.apichart.dev
+  WEB_HTTP_PORT: 8080
 
 jobs:
   deploy:
@@ -20,7 +21,7 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          envs: GITHUB_TOKEN,PROJECT_NAME,APP_DOMAIN
+          envs: GITHUB_TOKEN,PROJECT_NAME,APP_DOMAIN,WEB_HTTP_PORT
           script: |
             set -e
             PROJECT_DIR="$HOME/$PROJECT_NAME"
@@ -32,7 +33,7 @@ jobs:
             cd "$PROJECT_DIR"
             git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
             git pull origin main
-            export PROJECT_NAME APP_DOMAIN
+            export PROJECT_NAME APP_DOMAIN WEB_HTTP_PORT
             docker compose --project-name "$PROJECT_NAME" build --no-cache
             docker compose --project-name "$PROJECT_NAME" up -d
         env:

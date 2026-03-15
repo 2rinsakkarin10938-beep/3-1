@@ -44,9 +44,10 @@ bun run dev
 - `deploy/server.Dockerfile`
 
 แนวทาง:
-- Caddy รับ traffic ของ `gamev1.apichart.dev`
+- Caddy ใน container serve แอปผ่าน HTTP ภายใน
 - static frontend ถูก serve จาก container `web`
 - `/api/*` และ `/ws/*` ถูก proxy ไปที่ Elysia server
+- host reverse proxy บน VPS ควรส่ง `gamev1.apichart.dev` มาที่ `127.0.0.1:8080`
 
 ## Flow ที่ควรทดสอบ
 

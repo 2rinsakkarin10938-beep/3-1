@@ -3,16 +3,11 @@ services:
     build:
       context: .
       dockerfile: deploy/web.Dockerfile
-      args:
-        APP_DOMAIN: ${APP_DOMAIN}
     restart: unless-stopped
     depends_on:
       - server
     ports:
-      - "80:80"
-      - "443:443"
-    environment:
-      APP_DOMAIN: ${APP_DOMAIN}
+      - "127.0.0.1:${WEB_HTTP_PORT:-8080}:80"
     volumes:
       - caddy_data:/data
       - caddy_config:/config

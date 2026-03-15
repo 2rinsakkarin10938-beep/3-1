@@ -38,6 +38,7 @@ services:
 - `server`: ElysiaJS/Bun backend
 
 workflow ที่ [deploy.yml](/home/apichart/3-1/.github/workflows/deploy.yml) ต้องอาศัย DNS ของ domain ชี้มาที่ VPS และเครื่องต้องเปิด `80/443`
+โดย compose stack นี้จะ bind หน้าเว็บไว้ที่ `127.0.0.1:8080` เพื่อให้ reverse proxy หลักบน VPS รับ `gamev1.apichart.dev` แล้วส่งต่อเข้ามา
 
 ## Controls
 
