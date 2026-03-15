@@ -1,5 +1,5 @@
 import { cpSync, existsSync, mkdirSync } from "node:fs";
-import path from "node:path";
+import path, { resolve } from "node:path";
 import { defineConfig } from "vite";
 
 function copyRuntimeDirs(directories) {
@@ -30,6 +30,20 @@ export default defineConfig({
   preview: {
     host: "0.0.0.0",
     port: 4173,
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+        character: resolve(__dirname, "character.html"),
+        chat: resolve(__dirname, "chat.html"),
+        game: resolve(__dirname, "game.html"),
+        "room-create": resolve(__dirname, "room-create.html"),
+        "room-join": resolve(__dirname, "room-join.html"),
+        "room-waiting": resolve(__dirname, "room-waiting.html"),
+        settings: resolve(__dirname, "settings.html"),
+      },
+    },
   },
   plugins: [copyRuntimeDirs(["maps", "assets"])],
 });
