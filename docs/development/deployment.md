@@ -53,10 +53,14 @@ sudo systemctl reload caddy
 ## Workflow Runtime Assumptions
 
 workflow ที่ `.github/workflows/deploy.yml` จะ:
-1. clone/pull repo ไปที่ `~/gamev1`
-2. export `PROJECT_NAME` และ `APP_DOMAIN`
-3. bind หน้าเว็บไว้ที่ `127.0.0.1:8080`
-4. run `docker compose up -d --build --force-recreate --remove-orphans`
+1. clone repo ถ้ายังไม่มี
+2. `git fetch --tags origin main`
+3. `git reset --hard origin/main` และ `git clean -fd`
+4. export `PROJECT_NAME` และ `APP_DOMAIN`
+5. bind หน้าเว็บไว้ที่ `127.0.0.1:8080`
+6. run `docker compose up -d --build --force-recreate --remove-orphans`
+7. ตรวจ `http://127.0.0.1:8080/` และ `/health`
+8. ถ้า response ว่างหรือ health ไม่ผ่าน จะ dump `docker compose logs` แล้ว fail
 
 ## Verification หลัง deploy
 

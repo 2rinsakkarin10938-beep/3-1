@@ -33,8 +33,21 @@ jobs:
 
             cd "$PROJECT_DIR"
             git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
-            git pull origin main
+            git fetch --tags origin main
+            git reset --hard origin/main
+            git clean -fd
             export PROJECT_NAME APP_DOMAIN WEB_HTTP_PORT
             docker compose --project-name "$PROJECT_NAME" up -d --build --force-recreate --remove-orphans
+            docker compose --project-name "$PROJECT_NAME" ps
+
+            if ! curl -fsS "http://127.0.0.1:${WEB_HTTP_PORT}/" > /tmp/gamev1-home.html || ! test -s /tmp/gamev1-home.html; then
+              docker compose --project-name "$PROJECT_NAME" logs --tail=200
+              exit 1
+            fi
+
+            if ! curl -fsS "http://127.0.0.1:${WEB_HTTP_PORT}/health" > /tmp/gamev1-health.json || ! grep -q '"status"' /tmp/gamev1-health.json; then
+              docker compose --project-name "$PROJECT_NAME" logs --tail=200
+              exit 1
+            fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
